@@ -153,11 +153,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="DProps.h" />
+    <ClInclude Include="ErrorMsg.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="ShadersComp.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DProps.cpp" />
+    <ClCompile Include="ErrorMsg.cpp" />
     <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="ShadersComp.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-namespace PlayingGround {
+namespace DEngine {
 
 	namespace ErrorMsg {
 
