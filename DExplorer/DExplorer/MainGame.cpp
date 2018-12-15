@@ -57,7 +57,8 @@ void MainGame::systemInit() {
 
 	glfwSetWindowUserPointer(window, &m_inputManager);
 
-	glViewport(0, 0, m_width, m_height);
+	glViewport(0, 0, DEngine::width, DEngine::height);
+	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
 }
 
@@ -66,11 +67,21 @@ void MainGame::setCallbacks() {
 	glfwSetKeyCallback(window, keyCallback);
 }
 
+void MainGame::controlManager() {
+	if (m_inputManager.isKeyPressed(GLFW_KEY_ESCAPE)) {
+		glfwSetWindowShouldClose(window, true);
+	}
+}
+
 void MainGame::gameLoop(){
 	while (!glfwWindowShouldClose(window)) {
 		glfwSwapBuffers(window);
 		glfwPollEvents();
+		controlManager();
 		m_inputManager.update();
+
+		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_DEPTH_BUFFER_BIT);
 
 	}
 }
@@ -79,15 +90,12 @@ void MainGame::gameLoop(){
 
 void MainGame::framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
+	DEngine::InputManager* m_inputManager = reinterpret_cast<DEngine::InputManager*>(glfwGetWindowUserPointer(window));
+	m_inputManager->setNewWH(height, width);
 }
 
 void MainGame::keyCallback(GLFWwindow * window, int key, int scancode, int action, int mode) {
 	DEngine::InputManager* m_inputManager = reinterpret_cast<DEngine::InputManager*>(glfwGetWindowUserPointer(window));
-
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-		glfwSetWindowShouldClose(window, GL_TRUE);
-
-	}
 
 	if (action == GLFW_PRESS) {
 		m_inputManager->pressKey(key);

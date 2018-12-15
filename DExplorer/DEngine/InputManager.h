@@ -18,8 +18,8 @@ namespace DEngine {
 		bool isKeyPressed(int keyID);
 		glm::vec2 getMouseCords() { return m_mouseCords; }
 		glm::vec2 getCordsOffset() { return m_mouseCords - m_prevMouseCords; }
+		void setNewWH(int height, int width);
 	private:
-
 		bool wasKeyDown(int keyID);
 
 		std::unordered_map<int, bool> m_keyMap;
@@ -27,7 +27,6 @@ namespace DEngine {
 
 		glm::vec2 m_mouseCords;
 		glm::vec2 m_prevMouseCords;
-
 	};
 
 } //namespace

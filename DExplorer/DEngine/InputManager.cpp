@@ -49,6 +49,11 @@ namespace DEngine {
 		return false;
 	}
 
+	void InputManager::setNewWH(int height, int width) {
+		DEngine::setHeight(height);
+		DEngine::setWidth(width);
+	}
+
 	bool InputManager::wasKeyDown(int keyID)
 	{
 		auto it = m_prevKeyMap.find(keyID);
