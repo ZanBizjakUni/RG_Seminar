@@ -2,6 +2,7 @@
 
 #include <glad\glad.h>
 #include <GLFW\glfw3.h>
+#include <glm/glm.hpp>
 #include <vector>
 namespace DEngine {
 
@@ -16,6 +17,11 @@ namespace DEngine {
 		void unuse();
 		GLint returnColorIndex();
 		const GLuint returnProgramID() { return m_programID; }
+		void set4f(const std::string &name, glm::vec4 v);
+		void set3f(const std::string &name, glm::vec3 v);
+		void set2f(const std::string &name, glm::vec2 v);
+		void set1f(const std::string &name, float v);
+
 		//	void unuse();
 	private:
 		void compileShader(GLuint id, std::string shaderPath);

@@ -80,6 +80,23 @@ namespace DEngine {
 		return glGetUniformLocation(m_programID, "ourColor");
 	}
 
+	void ShadersComp::set4f(const std::string & name, glm::vec4 v) {
+		glUniform4f(glGetUniformLocation(m_programID, name.c_str()), v.x, v.y, v.z, v.w);
+	}
+
+	void ShadersComp::set3f(const std::string & name, glm::vec3 v) {
+
+		glUniform3f(glGetUniformLocation(m_programID, name.c_str()), v.x, v.y, v.z);
+	}
+
+	void ShadersComp::set2f(const std::string & name, glm::vec2 v) {
+		glUniform2f(glGetUniformLocation(m_programID, name.c_str()), v.x, v.y);
+	}
+
+	void ShadersComp::set1f(const std::string & name, float v) {
+		glUniform1f(glGetUniformLocation(m_programID, name.c_str()), v);
+	}
+
 
 	//funkcija, ki iz datoteke prenese glsl program in ga compila
 	void ShadersComp::compileShader(GLuint id, std::string shaderPath) {

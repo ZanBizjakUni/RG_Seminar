@@ -5,6 +5,8 @@
 
 #include <stdio.h>
 #include <memory>
+#include <array>
+#include <vector>
 
 #include <DProps.h>
 #include <InputManager.h>
