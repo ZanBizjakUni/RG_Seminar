@@ -1,17 +1,17 @@
 #include "Entity.h"
 
 
-
 Entity::Entity() {}
 
-Entity::Entity(float verts[]) {
-	const int n = sizeof(verts) / sizeof(float);
-	for (int i = 0; i < n; i++) {
-		m_verts.push_back(verts[i]);
-	}
-	
-
+Entity::Entity(std::string bindName) {
+	m_bind = bindName;
 }
 
 
+
 Entity::~Entity() {}
+
+void Entity::draw(DEngine::Binder b) {
+	glBindVertexArray(b.getBinder(m_bind).VAO);
+	glDrawElements(GL_TRIANGLES, b.getBinder(m_bind).indices.size() , GL_UNSIGNED_INT, 0);
+}

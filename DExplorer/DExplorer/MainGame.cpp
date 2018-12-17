@@ -27,6 +27,7 @@ void MainGame::start(){
 	systemInit();
 	setShaders();
 	setCallbacks();
+	enviromentInit();
 	gameLoop();
 
 }
@@ -40,40 +41,8 @@ void MainGame::start(){
 * Sets up Viewport.
 */
 void MainGame::systemInit() {
-	/*******************************************
-	  *inicializacija glfw okna in nastavljanje
-	  *opcij za reèeno okno (hints)
-	  *******************************************/
-
-	DEngine::setHeight(m_height);
-	DEngine::setWidth(m_width);
-
-	if (!glfwInit()) {
-		printf_s("Could not initialise glfw\n");
-	}
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-	window = glfwCreateWindow(DEngine::width, DEngine::height, "DExplorer", nullptr, nullptr);
-
-	if (window == nullptr) {
-		printf("Failed to create GLFW window\n");
-		glfwTerminate();
-		return;
-	}
-
-	glfwMakeContextCurrent(window);
-
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-		printf_s("Failed to initialize GLAD\n");
-		return;
-	}
-
-	glfwSetWindowUserPointer(window, &m_inputManager);
-
-	glViewport(0, 0, DEngine::width, DEngine::height);
-	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+	m_ignition.start(m_width, m_height, m_inputManager);
+	
 
 }
 ///setShaders()
@@ -92,9 +61,9 @@ void MainGame::setShaders() {
 void MainGame::setCallbacks() {
 
 	//set callback for when window is resized
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetFramebufferSizeCallback(m_ignition.getWindow(), framebuffer_size_callback);
 	//set callback for when a key is pressed
-	glfwSetKeyCallback(window, keyCallback);
+	glfwSetKeyCallback(m_ignition.getWindow(), keyCallback);
 }
 
 ///controlManager()
@@ -104,7 +73,7 @@ void MainGame::setCallbacks() {
 void MainGame::controlManager() {
 	//if escape is pressed close the glfw window
 	if (m_inputManager.isKeyPressed(GLFW_KEY_ESCAPE)) {
-		glfwSetWindowShouldClose(window, true);
+		glfwSetWindowShouldClose(m_ignition.getWindow(), true);
 	}
 
 	if (m_inputManager.isKeyPressed(GLFW_KEY_F3)) {
@@ -113,6 +82,20 @@ void MainGame::controlManager() {
 	if (m_inputManager.isKeyPressed(GLFW_KEY_F4)) {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
+}
+
+void MainGame::enviromentInit() {
+	m_binder.setBinder("square", {
+	 0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f,// top right
+	 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // bottom right
+	-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, // bottom left
+	-0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f   // top left 
+					   },
+	 {  // note that we start from 0!
+		0, 1, 3,   // first triangle
+		1, 2, 3    // second triangle
+	 });
+	m_square = Entity("square");
 }
 
 ///draw()
@@ -137,7 +120,7 @@ void MainGame::gameLoop(){
 	-0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f   // top left 
 	};*/
 
-	std::array<float, 24> verts = {
+	/*std::array<float, 24> verts = {
 	 0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f,// top right
 	 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // bottom right
 	-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, // bottom left
@@ -145,12 +128,19 @@ void MainGame::gameLoop(){
 	};
 	std::vector<float> vertices;
 	vertices.insert(vertices.begin(), verts.begin(), verts.end());
-	vertices.shrink_to_fit();
-	unsigned int indices[] = {  // note that we start from 0!
+	vertices.shrink_to_fit();*/
+	/*unsigned int indices[] = {  // note that we start from 0!
+		0, 1, 3,   // first triangle
+		1, 2, 3    // second triangle
+	};*/
+/*
+	std::vector<unsigned int> indices = {  // note that we start from 0!
 		0, 1, 3,   // first triangle
 		1, 2, 3    // second triangle
 	};
-
+	indices.shrink_to_fit();
+	// postion attribute ( layout (location = 0) in vert shader)
+	
 	//initialisation of: Vertex Buffer Object, Vertex Array Object and Element Buffer Object
 	unsigned int VBO, VAO, EBO;
 
@@ -171,29 +161,27 @@ void MainGame::gameLoop(){
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[0]) * vertices.capacity(), &vertices[0], GL_STATIC_DRAW);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[0]) * indices.capacity(), &indices[0], GL_STATIC_DRAW);
 
-	// postion attribute ( layout (location = 0) in vert shader)
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
 	// color attribute ( layout (location = 1) in vert shader)
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
-
+	*/
 
 	/*Stuff to reorganise ^*/
-	while (!glfwWindowShouldClose(window)) {
+	while (!glfwWindowShouldClose(m_ignition.getWindow())) {
 		/*TODO: reorganise the code below*/
 		m_shader.use();
-		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6,GL_UNSIGNED_INT, 0);
+		m_square.draw(m_binder);
 		/*********************************/
 		glfwPollEvents();
 		controlManager();
 		m_inputManager.update();
 
-		glfwSwapBuffers(window);
+		glfwSwapBuffers(m_ignition.getWindow());
 		glClear(GL_COLOR_BUFFER_BIT);
 		glClear(GL_DEPTH_BUFFER_BIT);
 

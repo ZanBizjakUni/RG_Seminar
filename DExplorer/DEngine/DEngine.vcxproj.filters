@@ -27,6 +27,12 @@
     <ClInclude Include="ErrorMsg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Ignition.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Binder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InputManager.cpp">
@@ -39,6 +45,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ErrorMsg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Ignition.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Binder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

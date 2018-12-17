@@ -4,13 +4,18 @@
 #include <array>
 #include <algorithm>
 
+#include <Binder.h>
+
+
 class Entity {
 public:
 	Entity();
-	Entity(float verts[] );
-
+	Entity(std::string bindName );
 	~Entity();
+
+	void draw(DEngine::Binder b);
+
 protected:
-	std::vector<float> m_verts;
+	std::string m_bind;
 };
 
