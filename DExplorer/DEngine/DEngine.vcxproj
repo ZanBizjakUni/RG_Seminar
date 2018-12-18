@@ -158,6 +158,8 @@
     <ClInclude Include="Ignition.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="ShadersComp.h" />
+    <ClInclude Include="stb_image.h" />
+    <ClInclude Include="TextureLoader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Binder.cpp" />
@@ -166,6 +168,7 @@
     <ClCompile Include="Ignition.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="ShadersComp.cpp" />
+    <ClCompile Include="TextureLoader.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -21,7 +21,7 @@ namespace DEngine {
 		void set3f(const std::string &name, glm::vec3 v);
 		void set2f(const std::string &name, glm::vec2 v);
 		void set1f(const std::string &name, float v);
-
+		void set1i(const std::string &name, int v);
 		//	void unuse();
 	private:
 		void compileShader(GLuint id, std::string shaderPath);

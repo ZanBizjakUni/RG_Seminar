@@ -13,9 +13,10 @@ public:
 	Entity(std::string bindName );
 	~Entity();
 
-	void draw(DEngine::Binder b);
+	void draw(DEngine::Binder& b);
 
 protected:
 	std::string m_bind;
+	
 };
 

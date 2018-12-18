@@ -26,7 +26,7 @@ void MainGame::start(){
 	 
 	systemInit();
 	setShaders();
-	setCallbacks();
+	setCallbacks();	
 	enviromentInit();
 	gameLoop();
 
@@ -42,6 +42,7 @@ void MainGame::start(){
 */
 void MainGame::systemInit() {
 	m_ignition.start(m_width, m_height, m_inputManager);
+	m_shader = new DEngine::ShadersComp();
 	
 
 }
@@ -50,8 +51,8 @@ void MainGame::systemInit() {
 * Compile and link ShaderComp objects defined in MainGame class
 */
 void MainGame::setShaders() {
-	m_shader.compileShaders("shaders/shader.vert", "shaders/shader.frag");
-	m_shader.linkShaders();
+	m_shader->compileShaders("shaders/shader.vert", "shaders/shader.frag");
+	m_shader->linkShaders();
 }
 
 ///setCallBacks()
@@ -85,17 +86,31 @@ void MainGame::controlManager() {
 }
 
 void MainGame::enviromentInit() {
+	printf("%d\n", glGetError());
 	m_binder.setBinder("square", {
-	 0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f,// top right
-	 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // bottom right
-	-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, // bottom left
-	-0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f   // top left 
+	 0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,// top right
+	 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,// bottom right
+	-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,// bottom left
+	-0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f // top left 
 					   },
 	 {  // note that we start from 0!
 		0, 1, 3,   // first triangle
 		1, 2, 3    // second triangle
 	 });
-	m_square = Entity("square");
+	printf("%d\n", glGetError());
+
+	m_binder.setTextureBinder("textures/container.jpg");
+	m_binder.setTextureBinder("textures/awesomeface.png");
+	m_square = TexturedEntity("square");
+
+	m_square.setTexBind("textures/container.jpg");
+	m_square.setTexBind("textures/awesomeface.png");
+
+	m_shader->use();
+	m_shader->set1i("texture1", 0);
+
+	m_shader->set1i("texture2", 1);
+
 }
 
 ///draw()
@@ -173,8 +188,11 @@ void MainGame::gameLoop(){
 
 	/*Stuff to reorganise ^*/
 	while (!glfwWindowShouldClose(m_ignition.getWindow())) {
+		glClear(GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT);
+
 		/*TODO: reorganise the code below*/
-		m_shader.use();
+		m_shader->use();
 		m_square.draw(m_binder);
 		/*********************************/
 		glfwPollEvents();
@@ -182,8 +200,6 @@ void MainGame::gameLoop(){
 		m_inputManager.update();
 
 		glfwSwapBuffers(m_ignition.getWindow());
-		glClear(GL_COLOR_BUFFER_BIT);
-		glClear(GL_DEPTH_BUFFER_BIT);
 
 	}
 }

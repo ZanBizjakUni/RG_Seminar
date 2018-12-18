@@ -44,7 +44,6 @@ namespace DEngine {
 		glAttachShader(m_programID, m_fragmentShaderID);
 
 		glLinkProgram(m_programID);
-
 		GLint isLinked = 0;
 		glGetProgramiv(m_programID, GL_LINK_STATUS, &isLinked);
 		if (isLinked == GL_FALSE) {
@@ -93,8 +92,13 @@ namespace DEngine {
 		glUniform2f(glGetUniformLocation(m_programID, name.c_str()), v.x, v.y);
 	}
 
-	void ShadersComp::set1f(const std::string & name, float v) {
+	void ShadersComp::set1f(const std::string & name, GLfloat v) {
 		glUniform1f(glGetUniformLocation(m_programID, name.c_str()), v);
+	}
+
+	void ShadersComp::set1i(const std::string & name, GLint v) {
+		glUniform1i(glGetUniformLocation(m_programID, name.c_str()), v);
+
 	}
 
 

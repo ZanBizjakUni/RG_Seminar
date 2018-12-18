@@ -12,10 +12,8 @@
 #include <InputManager.h>
 #include <ShadersComp.h>
 #include <Ignition.h>
-#include <Binder.h>
 
-#include "Entity.h"
-
+#include "TexturedEntity.h"
 class MainGame
 {
 public:
@@ -43,9 +41,9 @@ private:
 	const unsigned int m_height;
 
 	/*TODO: Proper implementation of bottom attributes*/
-	DEngine::ShadersComp m_shader;
+	DEngine::ShadersComp* m_shader;
 	DEngine::Binder m_binder;
-	Entity m_square;
+	TexturedEntity m_square;
 
 };
 

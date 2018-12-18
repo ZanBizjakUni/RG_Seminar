@@ -40,7 +40,7 @@ void Ignition::start(int w, int h, DEngine::InputManager& im) {
 	}
 
 	glfwSetWindowUserPointer(m_window, &im);
-
 	glViewport(0, 0, DEngine::width, DEngine::height);
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+
 }
