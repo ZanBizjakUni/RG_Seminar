@@ -8,6 +8,7 @@ namespace DEngine {
 	TextureLoader::~TextureLoader() {}
 
 	void TextureLoader::bindTexture(std::string imgPath) {
+		stbi_set_flip_vertically_on_load(true);
 		unsigned char* m_data = stbi_load(imgPath.c_str(), &m_width, &m_height, &m_nrChannels, 0);
 
 		glGenTextures(1, &m_texture);

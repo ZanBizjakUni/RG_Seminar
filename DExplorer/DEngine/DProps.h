@@ -1,5 +1,8 @@
 #pragma once
 
+#include  <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 namespace DEngine {
 	/*class DProps
 	{
@@ -19,4 +22,6 @@ namespace DEngine {
 	extern void setHeight(int h);
 	extern int height;
 	extern int width;
+	extern float fov;
+	extern float sensitivity;
 } //namespace

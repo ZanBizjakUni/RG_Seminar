@@ -125,11 +125,13 @@
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainGame.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="TexturedEntity.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h" />
     <ClInclude Include="MainGame.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="TexturedEntity.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

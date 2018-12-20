@@ -101,6 +101,11 @@ namespace DEngine {
 
 	}
 
+	void ShadersComp::setMat4fv(const std::string & name, glm::mat4 v) {
+		glUniformMatrix4fv(glGetUniformLocation(m_programID, name.c_str()), 1, GL_FALSE, glm::value_ptr(v));
+	}
+
+
 
 	//funkcija, ki iz datoteke prenese glsl program in ga compila
 	void ShadersComp::compileShader(GLuint id, std::string shaderPath) {

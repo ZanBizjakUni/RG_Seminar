@@ -4,8 +4,9 @@
 
 TexturedEntity::TexturedEntity() {}
 
-TexturedEntity::TexturedEntity(std::string bindName) {
+TexturedEntity::TexturedEntity(std::string bindName, glm::vec4 p) {
 	m_bind = bindName;
+	init(p);
 }
 
 

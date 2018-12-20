@@ -153,6 +153,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Binder.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="DProps.h" />
     <ClInclude Include="ErrorMsg.h" />
     <ClInclude Include="Ignition.h" />
@@ -163,6 +164,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Binder.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="DProps.cpp" />
     <ClCompile Include="ErrorMsg.cpp" />
     <ClCompile Include="Ignition.cpp" />

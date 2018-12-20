@@ -6,9 +6,12 @@
 * Setting up initial width and height.
 */
 MainGame::MainGame() : m_width(800),
-					   m_height(600)
+					   m_height(600)				   
+
 					   
 {
+	DEngine::setHeight(m_height);
+	DEngine::setWidth(m_width);
 }
 
 
@@ -43,6 +46,7 @@ void MainGame::start(){
 void MainGame::systemInit() {
 	m_ignition.start(m_width, m_height, m_inputManager);
 	m_shader = new DEngine::ShadersComp();
+	m_player = new Player();
 	
 
 }
@@ -65,6 +69,8 @@ void MainGame::setCallbacks() {
 	glfwSetFramebufferSizeCallback(m_ignition.getWindow(), framebuffer_size_callback);
 	//set callback for when a key is pressed
 	glfwSetKeyCallback(m_ignition.getWindow(), keyCallback);
+
+	glfwSetCursorPosCallback(m_ignition.getWindow(), mouseCallback);
 }
 
 ///controlManager()
@@ -83,25 +89,113 @@ void MainGame::controlManager() {
 	if (m_inputManager.isKeyPressed(GLFW_KEY_F4)) {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
+
+	if (m_inputManager.isKeyDown(GLFW_KEY_A)) {
+		m_player->move(Direction::LEFT);
+	}
+	
+	if (m_inputManager.isKeyDown(GLFW_KEY_D)) {
+		//m_square.rotate(-1.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+		m_player->move(Direction::RIGHT);
+	}
+	if (m_inputManager.isKeyDown(GLFW_KEY_W)) {
+		m_player->move(Direction::FORWARD);
+	}
+	if (m_inputManager.isKeyDown(GLFW_KEY_S)) {
+		m_player->move(Direction::BACKWARD);
+	}
+	if (m_inputManager.isKeyDown(GLFW_KEY_LEFT_SHIFT)) {
+		m_player->toggleSprint();
+	}
+	else {
+		m_player->unToggleSprint();
+	}
 }
 
 void MainGame::enviromentInit() {
-	printf("%d\n", glGetError());
 	m_binder.setBinder("square", {
-	 0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,// top right
-	 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,// bottom right
-	-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,// bottom left
-	-0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f // top left 
+	 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,// top right
+	 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,// bottom right
+	-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,// bottom left
+	-0.5f,  0.5f, 0.0f, 0.0f, 1.0f // top left 
 					   },
 	 {  // note that we start from 0!
 		0, 1, 3,   // first triangle
 		1, 2, 3    // second triangle
 	 });
-	printf("%d\n", glGetError());
+	m_binder.setBinder("cube", {
+	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+					   });
 
 	m_binder.setTextureBinder("textures/container.jpg");
 	m_binder.setTextureBinder("textures/awesomeface.png");
-	m_square = TexturedEntity("square");
+
+	glm::vec3 cubePositions[] = {
+		glm::vec3(0.0f,  0.0f,  0.0f),
+		glm::vec3(2.0f,  5.0f, -15.0f),
+		glm::vec3(-1.5f, -2.2f, -2.5f),
+		glm::vec3(-3.8f, -2.0f, -12.3f),
+		glm::vec3(2.4f, -0.4f, -3.5f),
+		glm::vec3(-1.7f,  3.0f, -7.5f),
+		glm::vec3(1.3f, -2.0f, -2.5f),
+		glm::vec3(1.5f,  2.0f, -2.5f),
+		glm::vec3(1.5f,  0.2f, -1.5f),
+		glm::vec3(-1.3f,  1.0f, -1.5f)
+	};
+	for (int i = 0; i < 10; i++) {
+
+		m_cubes.emplace_back(TexturedEntity("cube", glm::vec4(cubePositions[i], 1.0f)));
+		m_cubes.back().setTexBind("textures/container.jpg");
+		m_cubes.back().setTexBind("textures/awesomeface.png");
+		m_cubes.back().rotate(20.0f * i, glm::vec3(1.0f, 0.3f, 0.5f));
+
+	}
+
+	std::random_device rd;
+	std::mt19937 mt(rd());
+	std::uniform_real_distribution<float> dist(-1.0f, 1.0);
+
+	m_square = TexturedEntity("square", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 
 	m_square.setTexBind("textures/container.jpg");
 	m_square.setTexBind("textures/awesomeface.png");
@@ -110,7 +204,8 @@ void MainGame::enviromentInit() {
 	m_shader->set1i("texture1", 0);
 
 	m_shader->set1i("texture2", 1);
-
+	m_shader->unuse();
+	m_player->init();
 }
 
 ///draw()
@@ -127,77 +222,33 @@ void MainGame::draw() {
 */
 void MainGame::gameLoop(){
 	/*Stuff to reorganise in project ( following the tutorial )*/
-
-	/*float verts[] = {
-	 0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f,// top right
-	 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // bottom right
-	-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, // bottom left
-	-0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f   // top left 
-	};*/
-
-	/*std::array<float, 24> verts = {
-	 0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f,// top right
-	 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // bottom right
-	-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, // bottom left
-	-0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f   // top left 
-	};
-	std::vector<float> vertices;
-	vertices.insert(vertices.begin(), verts.begin(), verts.end());
-	vertices.shrink_to_fit();*/
-	/*unsigned int indices[] = {  // note that we start from 0!
-		0, 1, 3,   // first triangle
-		1, 2, 3    // second triangle
-	};*/
-/*
-	std::vector<unsigned int> indices = {  // note that we start from 0!
-		0, 1, 3,   // first triangle
-		1, 2, 3    // second triangle
-	};
-	indices.shrink_to_fit();
-	// postion attribute ( layout (location = 0) in vert shader)
 	
-	//initialisation of: Vertex Buffer Object, Vertex Array Object and Element Buffer Object
-	unsigned int VBO, VAO, EBO;
-
-	//generate vertex array object
-	glGenVertexArrays(1, &VAO);
-
-	//generate Vertex Buffer Object (its id)
-	glGenBuffers(1, &VBO);
-
-	//generate Element Buffer Object (its id)
-	glGenBuffers(1, &EBO);
-
-	//bind the generated VAO id
-	glBindVertexArray(VAO);
-
-	//bind VBO and EBO
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[0]) * vertices.capacity(), &vertices[0], GL_STATIC_DRAW);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[0]) * indices.capacity(), &indices[0], GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	// color attribute ( layout (location = 1) in vert shader)
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-	*/
+	m_shader->use();
+	m_square.rotate(-55.0f,glm::vec3(1.0f, 0.0f, 0.0f));
 
 	/*Stuff to reorganise ^*/
+
+
+	
 	while (!glfwWindowShouldClose(m_ignition.getWindow())) {
 		glClear(GL_DEPTH_BUFFER_BIT);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		/*TODO: reorganise the code below*/
 		m_shader->use();
-		m_square.draw(m_binder);
+		//m_square.rotate(1.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+		m_player->update(m_inputManager.getCordsOffset());
+		m_shader->setMat4fv("view", m_player->returnView());
+		m_shader->setMat4fv("projection", m_player->returnProjection());
+		for (auto& it : m_cubes) {
+			m_shader->setMat4fv("model", it.returnTransMat());
+			it.draw(m_binder);
+		}
+		//m_square.draw(m_binder);
 		/*********************************/
+		m_inputManager.update();
 		glfwPollEvents();
 		controlManager();
-		m_inputManager.update();
 
 		glfwSwapBuffers(m_ignition.getWindow());
 
@@ -239,5 +290,11 @@ void MainGame::keyCallback(GLFWwindow * window, int key, int scancode, int actio
 		m_inputManager->releaseKey(key);
 	}
 
+
+}
+
+void MainGame::mouseCallback(GLFWwindow * window, double xpos, double ypos) {
+	DEngine::InputManager* m_inputManager = reinterpret_cast<DEngine::InputManager*>(glfwGetWindowUserPointer(window));
+	m_inputManager->setMouseCords(xpos, ypos);
 
 }

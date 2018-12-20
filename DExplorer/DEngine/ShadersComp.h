@@ -3,6 +3,7 @@
 #include <glad\glad.h>
 #include <GLFW\glfw3.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <vector>
 namespace DEngine {
 
@@ -20,8 +21,9 @@ namespace DEngine {
 		void set4f(const std::string &name, glm::vec4 v);
 		void set3f(const std::string &name, glm::vec3 v);
 		void set2f(const std::string &name, glm::vec2 v);
-		void set1f(const std::string &name, float v);
-		void set1i(const std::string &name, int v);
+		void set1f(const std::string &name, GLfloat v);
+		void set1i(const std::string &name, GLint v);
+		void setMat4fv(const std::string &name, glm::mat4 v);
 		//	void unuse();
 	private:
 		void compileShader(GLuint id, std::string shaderPath);
