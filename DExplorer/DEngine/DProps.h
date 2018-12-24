@@ -20,8 +20,12 @@ namespace DEngine {
 	*/
 	extern void setWidth(int w);
 	extern void setHeight(int h);
+	extern void setDelta();
 	extern int height;
 	extern int width;
 	extern float fov;
 	extern float sensitivity;
+	extern double beginTime;
+	extern double endTime;
+	extern double deltaTime;
 } //namespace

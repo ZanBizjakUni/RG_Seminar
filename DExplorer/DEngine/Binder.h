@@ -30,7 +30,7 @@ namespace DEngine {
 		* ind is the vector of indices that will be obund  to the specific EBO
 		* VAO is generated for each new vector
 		*/
-		void setBinder(std::string binderName, std::vector<float> verts, std::vector<unsigned int> ind = {});
+		void setBinder(std::string binderName, std::vector<float> verts, std::vector<int> pointers, std::vector<unsigned int> ind = {});
 
 		///void setTextureBinder(std::string imgLoc)
 		/*
@@ -49,9 +49,12 @@ namespace DEngine {
 		* returns the id of the bound VAO
 		*/
 		BO getBinder(std::string name) { return m_binders[name]; }
+
+		int getTextureSize() { return m_textureBinder.size(); }
 	private:
 		std::unordered_map<std::string, BO> m_binders;
 		std::unordered_map<std::string, TextureLoader> m_textureBinder;
+
 	};
 
 } //namespace

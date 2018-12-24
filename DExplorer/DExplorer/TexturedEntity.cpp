@@ -6,6 +6,7 @@ TexturedEntity::TexturedEntity() {}
 
 TexturedEntity::TexturedEntity(std::string bindName, glm::vec4 p) {
 	m_bind = bindName;
+	m_textureless = false;
 	init(p);
 }
 
@@ -23,16 +24,9 @@ void TexturedEntity::setTexBind(std::string texBind) {
 void TexturedEntity::draw(DEngine::Binder& b) {
 	for (GLubyte i = 0; i < m_texBind.size(); i++) {
 		glActiveTexture(GL_TEXTURE0 + i);
-		glBindTexture(GL_TEXTURE, b.getTextureBinder(m_texBind[i]));
+		glBindTexture(GL_TEXTURE_2D, b.getTextureBinder(m_texBind[i]));
 	}
-	glActiveTexture(GL_TEXTURE0);
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, b.getTextureBinder(m_texBind[0]));
 
-	glActiveTexture(GL_TEXTURE1);
-	glEnable(GL_TEXTURE_2D);
-
-	glBindTexture(GL_TEXTURE_2D, b.getTextureBinder(m_texBind[1]));
 	
 	Entity::draw(b);
 }

@@ -21,8 +21,8 @@ namespace DEngine {
 		if (!glfwInit()) {
 			printf_s("Could not initialise glfw\n");
 		}
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 		m_window = glfwCreateWindow(DEngine::width, DEngine::height, "DExplorer", nullptr, nullptr);
@@ -42,7 +42,7 @@ namespace DEngine {
 
 		glfwSetWindowUserPointer(m_window, &im);
 		glViewport(0, 0, DEngine::width, DEngine::height);
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glEnable(GL_DEPTH_TEST);
 		glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	}

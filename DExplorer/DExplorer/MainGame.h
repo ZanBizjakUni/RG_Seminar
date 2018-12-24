@@ -45,9 +45,14 @@ private:
 
 	/*TODO: Proper implementation of bottom attributes*/
 	DEngine::ShadersComp* m_shader;
+	DEngine::ShadersComp* m_texturelessShader;
+	DEngine::ShadersComp* m_lightSourceShader;
+	DEngine::ShadersComp* m_billboardShader;
 	DEngine::Binder m_binder;
-	TexturedEntity m_square;
+	std::vector<Entity> m_lights;
+	Entity m_light;
 	std::vector<TexturedEntity> m_cubes;
+	TexturedEntity m_square;
 	Player* m_player;
 
 };

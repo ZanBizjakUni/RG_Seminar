@@ -12,11 +12,14 @@ public:
 	void toggleSprint();
 	void unToggleSprint();
 	void update(glm::vec2 offset);
+	float getYaw() { return m_yaw; }
 private:
 	double m_move;
 	float m_speed;
 	bool m_sprint;
 	float m_yaw;
 	float m_pitch;
+	float m_stepLen;
+	float m_stepHeight;
 };
 

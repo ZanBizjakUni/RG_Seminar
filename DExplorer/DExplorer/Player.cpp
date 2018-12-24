@@ -3,11 +3,13 @@
 
 
 Player::Player() {
-	m_speed = 0.05f;
+	m_speed = 2.5f;
 	m_sprint = false;
 	m_move = 0;
 	m_pitch = 0.0f;
 	m_yaw = 270.0f;
+	m_stepHeight = 50; //higher value --> smaller height
+	m_stepLen = 0.2; //higher value --> longer step;
 }
 
 
@@ -15,23 +17,25 @@ Player::~Player() {}
 
 void Player::move(Direction d) {
 
-	m_pos += glm::vec3(0.0f, sin(m_move/0.25)/100, 0.0f);
+	//m_pos += glm::vec3(0.0f, sin(m_move/m_stepLen)/m_stepHeight, 0.0f);
+	glm::vec3 t = glm::vec3(0.0f, 0.0f, 0.0f);
 	m_move += 0.05;
 	if (d == Direction::FORWARD) {
-		m_pos += (m_speed * ((int)m_sprint + 1))  * m_front;
+		m_pos += ((m_speed * (float)DEngine::deltaTime) * ((int)m_sprint + 1))  * m_front;
 	}
 	
 	if (d == Direction::BACKWARD) {
-		m_pos -= m_speed * m_front;
+		m_pos -= (m_speed * (float)DEngine::deltaTime) * m_front;
 	}
 
 	if (d == Direction::LEFT) {
-		m_pos -= glm::normalize(glm::cross(m_front, m_up)) * m_speed;
+		m_pos -= glm::normalize(glm::cross(m_front, m_up)) * (m_speed * (float)DEngine::deltaTime);;
 	}
 	if (d == Direction::RIGHT) {
-		m_pos += glm::normalize(glm::cross(m_front, m_up)) * m_speed;
+		m_pos += glm::normalize(glm::cross(m_front, m_up)) * (m_speed * (float)DEngine::deltaTime);
 
 	}
+
 
 
 }

@@ -24,6 +24,14 @@ namespace DEngine {
 							 m_up);
 	}
 
+	glm::vec3 Camera::getWorldUp() {
+		return glm::vec3(m_view[0].x, m_view[1].x, m_view[2].x);
+	}
+
+	glm::vec3 Camera::getWorldRight() {
+		return glm::vec3(m_view[0].y, m_view[1].y, m_view[2].y);
+	}
+
 	void Camera::update() {
 		m_view = glm::lookAt(m_pos, m_pos + m_front, m_up);
 

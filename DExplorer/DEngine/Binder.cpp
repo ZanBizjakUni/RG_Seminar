@@ -6,7 +6,7 @@ namespace DEngine {
 
 	Binder::~Binder() {}
 
-	void Binder::setBinder(std::string binderName, std::vector<float> verts, std::vector<unsigned int> ind) {
+	void Binder::setBinder(std::string binderName, std::vector<float> verts, std::vector<int> pointers, std::vector<unsigned int> ind) {
 		m_binders[binderName].vertices = verts;
 		m_binders[binderName].indices = ind;
 		m_binders[binderName].vertices.shrink_to_fit();
@@ -28,14 +28,24 @@ namespace DEngine {
 		glBindBuffer(GL_ARRAY_BUFFER, m_binders[binderName].VBO);
 
 		glBufferData(GL_ARRAY_BUFFER, sizeof(m_binders[binderName].vertices[0]) * m_binders[binderName].vertices.capacity(), &m_binders[binderName].vertices[0], GL_STATIC_DRAW);
-	
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+		int offset = 0;
+		int sum = 0;
+		for (auto it : pointers) {
+			sum += it;
+		}
+		for (int i = 0; i < pointers.size(); i++) {
+			glVertexAttribPointer(i, pointers[i], GL_FLOAT, GL_FALSE, sum * sizeof(float), (void*)(offset * sizeof(float)));
+			glEnableVertexAttribArray(i);
+			offset += pointers[i];
+
+		}
+	/*	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(0);
 
 		// color attribute ( layout (location = 1) in vert shader)
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 		glEnableVertexAttribArray(1);
-
+		*/
 		glBindVertexArray(0);
 	}
 

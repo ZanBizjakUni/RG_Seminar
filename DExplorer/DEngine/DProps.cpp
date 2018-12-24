@@ -19,8 +19,13 @@ namespace DEngine {
 
 	void setWidth(int w) { width = w; }
 	void setHeight(int h) { height = h; }
+	void setDelta() { deltaTime = endTime - beginTime; }
 	int height = 0;
 	int width = 0;
 	float fov = 45.0f;
 	float sensitivity = 0.05f;
+	double beginTime = 0;
+	double endTime = 0;
+	double deltaTime = 0;
+
 }
