@@ -21,11 +21,11 @@ void Player::move(Direction d) {
 	glm::vec3 t = glm::vec3(0.0f, 0.0f, 0.0f);
 	m_move += 0.05;
 	if (d == Direction::FORWARD) {
-		m_pos += ((m_speed * (float)DEngine::deltaTime) * ((int)m_sprint + 1))  * m_front;
+		m_pos += ((m_speed * (float)DEngine::deltaTime) * ((int)m_sprint + 1))  * glm::vec3(m_front.x, 0.0f, m_front.z);
 	}
 	
 	if (d == Direction::BACKWARD) {
-		m_pos -= (m_speed * (float)DEngine::deltaTime) * m_front;
+		m_pos -= ((m_speed * (float)DEngine::deltaTime) * ((int)m_sprint + 1))  * glm::vec3(m_front.x, 0.0f, m_front.z);
 	}
 
 	if (d == Direction::LEFT) {
@@ -64,6 +64,8 @@ void Player::update(glm::vec2 offset) {
 	m_front.y = sin(glm::radians(m_pitch));
 	m_front.z = cos(glm::radians(m_pitch)) * sin(glm::radians(m_yaw));
 	m_front = glm::normalize(m_front);
+
+
 
 	Camera::update();
 }

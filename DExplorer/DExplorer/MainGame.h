@@ -48,6 +48,7 @@ private:
 	DEngine::ShadersComp* m_texturelessShader;
 	DEngine::ShadersComp* m_lightSourceShader;
 	DEngine::ShadersComp* m_billboardShader;
+	std::unordered_map<std::string, DEngine::ShadersComp*> m_shaders;
 	DEngine::Binder m_binder;
 	std::vector<Entity> m_lights;
 	Entity m_light;

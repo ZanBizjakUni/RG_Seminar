@@ -18,6 +18,7 @@ public:
 	Entity(std::string bindName, glm::vec4 p);
 	~Entity();
 
+	void setRootEntity();
 	void init(glm::vec4 p);
 	void draw(DEngine::Binder& b);
 	glm::mat4 returnTransMat() { return m_model; }
@@ -29,14 +30,18 @@ public:
 	void scale(glm::vec3 scl);
 	glm::vec3 getPos() { return glm::vec3(m_pos); }
 	bool isTextureless() { return m_textureless; }
-	void lookAtPlayer(glm::vec3 u, glm::vec3 r);
+	void setChildren(Entity* child);
+	void translateByParent(glm::mat4 parentMat);
 protected:
 	std::string m_bind;
 	glm::vec4 m_pos;
 	glm::vec4 m_orgPos;
 	glm::mat4 m_model;
+	glm::mat4 m_parentModel;
 	glm::mat3 m_normalModel;
 	bool m_textureless;
+
+	std::vector<Entity*> m_children;
 private:
 	glm::vec3 m_color;
 };

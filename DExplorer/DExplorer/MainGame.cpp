@@ -45,10 +45,16 @@ void MainGame::start(){
 */
 void MainGame::systemInit() {
 	m_ignition.start(m_width, m_height, m_inputManager);
-	m_shader = new DEngine::ShadersComp();
+	/*m_shader = new DEngine::ShadersComp();
 	m_texturelessShader = new DEngine::ShadersComp();
 	m_lightSourceShader = new DEngine::ShadersComp();
-	m_billboardShader = new DEngine::ShadersComp();
+	m_billboardShader = new DEngine::ShadersComp();*/
+
+	m_shaders["shader"] = new DEngine::ShadersComp();
+	m_shaders["textureless"] = new DEngine::ShadersComp();
+	m_shaders["lightSource"] = new DEngine::ShadersComp();
+	m_shaders["billboard"] = new DEngine::ShadersComp();
+
 	m_player = new Player();
 	
 
@@ -58,7 +64,7 @@ void MainGame::systemInit() {
 * Compile and link ShaderComp objects defined in MainGame class
 */
 void MainGame::setShaders() {
-	m_shader->compileShaders("shaders/shader.vert", "shaders/shader.frag");
+	/*m_shader->compileShaders("shaders/shader.vert", "shaders/shader.frag");
 	m_shader->linkShaders();
 
 	m_texturelessShader->compileShaders("shaders/lighting.vert", "shaders/textureless.frag");
@@ -68,7 +74,20 @@ void MainGame::setShaders() {
 	m_lightSourceShader->linkShaders();
 
 	m_billboardShader->compileShaders("shaders/billboard.vert", "shaders/shader.frag");
-	m_billboardShader->linkShaders();
+	m_billboardShader->linkShaders();*/
+
+	m_shaders["shader"]->compileShaders("shaders/shader.vert", "shaders/shader.frag");
+	m_shaders["shader"]->linkShaders();
+
+	m_shaders["textureless"]->compileShaders("shaders/lighting.vert", "shaders/textureless.frag");
+	m_shaders["textureless"]->linkShaders();
+
+	m_shaders["lightSource"]->compileShaders("shaders/lightsource.vert", "shaders/lightsource.frag");
+	m_shaders["lightSource"]->linkShaders();
+
+	m_shaders["billboard"]->compileShaders("shaders/billboard.vert", "shaders/shader.frag");
+	m_shaders["billboard"]->linkShaders();
+
 }
 
 ///setCallBacks()
@@ -127,6 +146,15 @@ void MainGame::controlManager() {
 	}
 	if (m_inputManager.isKeyDown(GLFW_KEY_UP)) {
 		m_square.translate(glm::vec3(0.0f, 0.0f, -1.5f));
+	}
+	if (m_inputManager.isKeyDown(GLFW_KEY_LEFT)) {
+		m_light.translate(glm::vec3(0.0f, 0.0f, -1.5f));
+	}
+	if (m_inputManager.isKeyDown(GLFW_KEY_RIGHT)) {
+		m_light.translate(glm::vec3(0.0f, 0.0f, 1.5f));
+	}
+	if (m_inputManager.isKeyDown(GLFW_KEY_R)) {
+		m_square.rotate(1.0f, glm::vec3(0.0f, 0.0f, 1.0f));
 	}
 
 
@@ -243,19 +271,24 @@ void MainGame::enviromentInit() {
 
 
 	/*INITIALISING OBJECTS*/
-	m_square = TexturedEntity("cube", glm::vec4(0.0f, 0.0f, -3.0f, 1.0f));
+	m_square = TexturedEntity("cube", glm::vec4(0.0f, 0.0f, -2.0f, 1.0f));
 //	m_square.setTexBind("textures/awesomeface.png");
 	m_square.setTexBind("textures/container.jpg");
 
 	m_light = Entity("cube", glm::vec4(1.0f, 0.0f, -2.0f, 1.0f));
- 
+	
+	m_square.setRootEntity();
+	m_square.setChildren(&m_light);
 
-	m_shader->use();
+	//m_shader->use();
+	m_shaders["shader"]->use();
 	for (int i = 0; i < m_binder.getTextureSize(); i++) {
-		m_shader->set1i("texture" + std::to_string(i), i);
+		//m_shader->set1i("texture" + std::to_string(i), i);
+		m_shaders["shader"]->set1i("texture" + std::to_string(i), i);
 	}
 
-	m_shader->unuse();
+//	m_shader->unuse();
+	m_shaders["shader"]->unuse();
 	m_player->init();
 }
 
@@ -310,15 +343,31 @@ void MainGame::gameLoop(){
 		//m_square.rotate(1.0f, glm::vec3(0.0f, 0.0f, 1.0f));
 		m_player->update(m_inputManager.getCordsOffset());
 
-		m_lightSourceShader->use();
+		/*m_lightSourceShader->use();
 		m_lightSourceShader->setMat4fv("model", m_light.returnTransMat());
 		m_lightSourceShader->setMat4fv("view", m_player->returnView());
 		m_lightSourceShader->setMat4fv("projection", m_player->returnProjection());
-		m_lightSourceShader->set3f("lightColor", m_light.getColor());
+		m_lightSourceShader->set3f("lightColor", m_light.getColor());*/
+
+		m_shaders["lightSource"]->use();
+		m_shaders["lightSource"]->setMat4fv("model", m_light.returnTransMat());
+		m_shaders["lightSource"]->setMat4fv("view", m_player->returnView());
+		m_shaders["lightSource"]->setMat4fv("projection", m_player->returnProjection());
+		m_shaders["lightSource"]->set3f("lightColor", m_light.getColor());
 
 		m_light.draw(m_binder);
 
-		m_shader->use();
+		m_shaders["shader"]->use();
+		m_shaders["shader"]->setMat4fv("model", m_square.returnTransMat());
+		m_shaders["shader"]->setMat4fv("view", m_player->returnView());
+		m_shaders["shader"]->setMat4fv("projection", m_player->returnProjection());
+		m_shaders["shader"]->setMat3fv("normModel", m_square.getNormModel());
+		m_shaders["shader"]->set3f("lightColor", m_light.getColor());
+		m_shaders["shader"]->set3f("viewPos", m_player->getPos());
+		m_shaders["shader"]->set3f("lightPos", m_light.getPos());
+		m_shaders["shader"]->set1i("arrSize", 1);
+
+		/*m_shader->use();
 		m_shader->setMat4fv("model", m_square.returnTransMat());
 		m_shader->setMat4fv("view", m_player->returnView());
 		m_shader->setMat4fv("projection", m_player->returnProjection());
@@ -326,11 +375,10 @@ void MainGame::gameLoop(){
 		m_shader->set3f("lightColor", m_light.getColor());
 		m_shader->set3f("viewPos", m_player->getPos());
 		m_shader->set3f("lightPos", m_light.getPos());
-		m_shader->set1i("arrSize", 1);
+		m_shader->set1i("arrSize", 1);*/
 		//m_shader->set3f("worldSpace", m_square.getPos());
 
 		m_square.draw(m_binder);
-	//	m_square.lookAtPlayer(m_player->getPos(), m_player->getYaw());
 		
 
 		/*********************************/
