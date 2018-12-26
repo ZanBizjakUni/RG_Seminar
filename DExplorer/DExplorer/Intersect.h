@@ -1,7 +1,3 @@
-
-#ifndef INTERSECT_DATA_INCLUDED_H
-#define INTERSECT_DATA_INCLUDED_H
-
 class Intersect
 {
 public:
@@ -15,5 +11,3 @@ private:
 	const bool  m_doesIntersect;
 	const float m_distance;
 };
-
-#endif
