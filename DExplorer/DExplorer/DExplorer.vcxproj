@@ -121,6 +121,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AABoundBox.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="glad.c" />
@@ -132,8 +133,10 @@
     <ClCompile Include="Wall.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AABoundBox.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="Entity.h" />
+    <ClInclude Include="Intersect.h" />
     <ClInclude Include="MainGame.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Room.h" />

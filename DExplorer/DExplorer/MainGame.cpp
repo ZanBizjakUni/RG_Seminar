@@ -1,4 +1,5 @@
 #include "MainGame.h"
+#include <iostream>
 
 ///MainGame()
 /*
@@ -377,6 +378,7 @@ void MainGame::gameLoop(){
 		m_collision->ifCollision(m_square);
 		if (m_collision->getCollision()) {
 			m_player->goBack();
+			
 		}
 		/*m_lightSourceShader->use();
 		m_lightSourceShader->setMat4fv("model", m_light.returnTransMat());
