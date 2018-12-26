@@ -31,8 +31,13 @@ public:
 	glm::vec3 getPos() { return glm::vec3(m_pos); }
 	bool isTextureless() { return m_textureless; }
 	void setChildren(Entity* child);
+	void setRadius(int r);
 	void translateByParent(glm::mat4 parentMat);
+	bool isSeleced() { return m_selected; }
+	void select();
+	void unselect();
 protected:
+	int m_radius;
 	std::string m_bind;
 	glm::vec4 m_pos;
 	glm::vec4 m_orgPos;
@@ -40,9 +45,10 @@ protected:
 	glm::mat4 m_parentModel;
 	glm::mat3 m_normalModel;
 	bool m_textureless;
-
+	bool m_selected;
 	std::vector<Entity*> m_children;
 private:
+
 	glm::vec3 m_color;
 };
 

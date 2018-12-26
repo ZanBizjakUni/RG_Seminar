@@ -9,12 +9,11 @@ in vec3 Normal;
 in vec3 FragPos;
 
 uniform sampler2D texture1;
-uniform sampler2D texture2;
-uniform sampler2D texture3;
+
 uniform vec3 lightColor;
 uniform vec3 viewPos;
 uniform vec3[MAX_LIGHTS] lightPos;
-uniform int arrSize;
+uniform int selected;
 
 void main(){
       vec3 norm = normalize(Normal);
@@ -25,8 +24,7 @@ void main(){
       float specularStr = 0.5f;
       float dist;
       vec4 result = vec4(0.0f, 0.0f, 0.0f, 0.0f);
-      int foo = arrSize;
-      for(int i = 0; i < MAX_LIGHTS; i++){
+      for(int i = 0; i < 1; i++){
             
             dist = max( 1 - (distance(FragPos, lightPos[i]) / lightRad) , 0.0);
             
@@ -41,11 +39,13 @@ void main(){
             specular *= dist;
             diffSpec += diffuse + specular;
       }
-    diffSpec = vec3(min(diffSpec.x, 1.0f), min(diffSpec.y, 1.0f), min(diffSpec.z, 1.0f) );
+      diffSpec = vec3(min(diffSpec.x, 1.0f), min(diffSpec.y, 1.0f), min(diffSpec.z, 1.0f) );
+      result = vec4((ambient + (diffSpec)), 1.0f) * texture(texture1, TexCoord);
 
-    result = vec4((ambient + (diffSpec)), 1.0f) * mix(texture(texture1, TexCoord), texture(texture2, TexCoord), 0.2);
-
-    FragColor = result;
+      if(selected == 1){
+            result += vec4(0.3f, 0.0f, 0.0f, 0.0f);
+      }
+      FragColor = result;
 
 }
 

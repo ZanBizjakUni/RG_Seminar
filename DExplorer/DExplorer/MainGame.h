@@ -15,8 +15,8 @@
 #include <Ignition.h>
 #include <Camera.h>
 
-#include "TexturedEntity.h"
 #include "Player.h"
+#include "Room.h"
 class MainGame
 {
 public:
@@ -54,6 +54,7 @@ private:
 	Entity m_light;
 	std::vector<TexturedEntity> m_cubes;
 	TexturedEntity m_square;
+	std::vector<Room> m_rooms;
 	Player* m_player;
 
 };

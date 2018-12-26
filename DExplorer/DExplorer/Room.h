@@ -3,25 +3,36 @@
 #include <Binder.h>
 #include <ShadersComp.h>
 
-#include "TexturedEntity.h"
+#include "Wall.h"
 #include "Player.h"
 
-enum class Orientation {NORTH, SOUTH, WEST, EAST, FLOOR};
+
+enum class Move {UP, DOWN, LEFT, RIGHT, FORWARD, BACKWARD};
+
 
 class Room {
 public:
 	Room();
-	Room(glm::vec3 pos, Player plyr);
+	Room(glm::vec3 pos, Player* plyr);
 	~Room();
 
-	void addWall(Orientation ort, glm::vec3 pos);
+	void addWall(Orientation ort);
 	void addLight();
-	void drawWalls(DEngine::Binder binder, DEngine::ShadersComp* shdr, glm::mat4 view, glm::mat4 proj, glm::vec3 playerPos);
+	void drawWalls(DEngine::Binder binder, DEngine::ShadersComp* shdr);
+	void drawLights(DEngine::Binder binder, DEngine::ShadersComp* shdr);
+	void selectFirstWall();
+	void moveSelected(Move mv);
+	void selectNext();
+	void selectPrev();
+	void rotateSelected();
 private:
-	std::vector<TexturedEntity> m_walls;
+	std::vector<Wall> m_walls;
 	std::vector<Entity> m_light;
+	std::vector<glm::vec3> m_lightPos;
 	Player* m_plyr;
+	TexturedEntity* selectedWall;
 	glm::mat4 m_model;
 	glm::vec3 m_pos;
+	int m_selID;
 
 };

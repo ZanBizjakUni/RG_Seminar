@@ -141,20 +141,45 @@ void MainGame::controlManager() {
 	else {
 		m_player->unToggleSprint();
 	}
-	if (m_inputManager.isKeyDown(GLFW_KEY_DOWN)) {
-		m_square.translate(glm::vec3(0.0f, 0.0f, 1.5f));
+	if (m_inputManager.isKeyPressed(GLFW_KEY_F1)) {
+		m_rooms.back().selectFirstWall();
 	}
-	if (m_inputManager.isKeyDown(GLFW_KEY_UP)) {
-		m_square.translate(glm::vec3(0.0f, 0.0f, -1.5f));
+	if (m_inputManager.isKeyPressed(GLFW_KEY_N)) {
+		m_rooms.back().addWall(Orientation::FLOOR);
+		m_rooms.back().selectNext();
 	}
-	if (m_inputManager.isKeyDown(GLFW_KEY_LEFT)) {
-		m_light.translate(glm::vec3(0.0f, 0.0f, -1.5f));
+	if (m_inputManager.isKeyPressed(GLFW_KEY_M)) {
+		m_rooms.back().addWall(Orientation::WALL);
+		m_rooms.back().selectNext();
 	}
-	if (m_inputManager.isKeyDown(GLFW_KEY_RIGHT)) {
-		m_light.translate(glm::vec3(0.0f, 0.0f, 1.5f));
+	if (m_inputManager.isKeyPressed(GLFW_KEY_R)) {
+		m_rooms.back().rotateSelected();
 	}
-	if (m_inputManager.isKeyDown(GLFW_KEY_R)) {
-		m_square.rotate(1.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+
+	if (m_inputManager.isKeyPressed(GLFW_KEY_INSERT)) {
+		m_rooms.back().selectNext();
+	}
+	if (m_inputManager.isKeyPressed(GLFW_KEY_HOME)) {
+		m_rooms.back().selectPrev();
+	}
+
+	if (m_inputManager.isKeyPressed(GLFW_KEY_LEFT)) {
+		m_rooms.back().moveSelected(Move::LEFT);
+	}
+	if (m_inputManager.isKeyPressed(GLFW_KEY_RIGHT)) {
+		m_rooms.back().moveSelected(Move::RIGHT);
+	}
+	if (m_inputManager.isKeyPressed(GLFW_KEY_UP)) {
+		m_rooms.back().moveSelected(Move::FORWARD);
+	}
+	if (m_inputManager.isKeyPressed(GLFW_KEY_DOWN)) {
+		m_rooms.back().moveSelected(Move::BACKWARD);
+	}
+	if (m_inputManager.isKeyPressed(GLFW_KEY_PAGE_UP)) {
+		m_rooms.back().moveSelected(Move::UP);
+	}
+	if (m_inputManager.isKeyPressed(GLFW_KEY_PAGE_DOWN)) {
+		m_rooms.back().moveSelected(Move::DOWN);
 	}
 
 
@@ -266,26 +291,33 @@ void MainGame::enviromentInit() {
 
 
 
+	m_binder.setTextureBinder("textures/stonebricks1.jpg");
 	m_binder.setTextureBinder("textures/container.jpg");
 	m_binder.setTextureBinder("textures/awesomeface.png");
+	m_binder.setTextureBinder("textures/wall.jpg");
 
 
 	/*INITIALISING OBJECTS*/
 	m_square = TexturedEntity("cube", glm::vec4(0.0f, 0.0f, -2.0f, 1.0f));
-//	m_square.setTexBind("textures/awesomeface.png");
-	m_square.setTexBind("textures/container.jpg");
+	m_square.setTexBind("textures/awesomeface.png");
+	//m_square.setTexBind("textures/wall.jpg");
 
 	m_light = Entity("cube", glm::vec4(1.0f, 0.0f, -2.0f, 1.0f));
 	
 	m_square.setRootEntity();
 	m_square.setChildren(&m_light);
 
+	m_rooms.emplace_back(Room(glm::vec3(0.0f, 0.0f, 0.0f), m_player));
+	m_rooms.back().addWall(Orientation::FLOOR);
+	m_rooms.back().addLight();
+
 	//m_shader->use();
 	m_shaders["shader"]->use();
-	for (int i = 0; i < m_binder.getTextureSize(); i++) {
+	/*for (int i = 0; i < m_binder.getTextureSize(); i++) {
 		//m_shader->set1i("texture" + std::to_string(i), i);
 		m_shaders["shader"]->set1i("texture" + std::to_string(i), i);
-	}
+	}*/
+	m_shaders["shader"]->set1i("texture" + std::to_string(1), 0);
 
 //	m_shader->unuse();
 	m_shaders["shader"]->unuse();
@@ -349,13 +381,13 @@ void MainGame::gameLoop(){
 		m_lightSourceShader->setMat4fv("projection", m_player->returnProjection());
 		m_lightSourceShader->set3f("lightColor", m_light.getColor());*/
 
-		m_shaders["lightSource"]->use();
+		/*m_shaders["lightSource"]->use();
 		m_shaders["lightSource"]->setMat4fv("model", m_light.returnTransMat());
 		m_shaders["lightSource"]->setMat4fv("view", m_player->returnView());
 		m_shaders["lightSource"]->setMat4fv("projection", m_player->returnProjection());
 		m_shaders["lightSource"]->set3f("lightColor", m_light.getColor());
 
-		m_light.draw(m_binder);
+	//	m_light.draw(m_binder);
 
 		m_shaders["shader"]->use();
 		m_shaders["shader"]->setMat4fv("model", m_square.returnTransMat());
@@ -365,7 +397,7 @@ void MainGame::gameLoop(){
 		m_shaders["shader"]->set3f("lightColor", m_light.getColor());
 		m_shaders["shader"]->set3f("viewPos", m_player->getPos());
 		m_shaders["shader"]->set3f("lightPos", m_light.getPos());
-		m_shaders["shader"]->set1i("arrSize", 1);
+		m_shaders["shader"]->set1i("arrSize", 1);*/
 
 		/*m_shader->use();
 		m_shader->setMat4fv("model", m_square.returnTransMat());
@@ -376,11 +408,15 @@ void MainGame::gameLoop(){
 		m_shader->set3f("viewPos", m_player->getPos());
 		m_shader->set3f("lightPos", m_light.getPos());
 		m_shader->set1i("arrSize", 1);*/
-		//m_shader->set3f("worldSpace", m_square.getPos());
+//		m_shaders["shader"]->set3f("worldSpace", m_square.getPos());
 
-		m_square.draw(m_binder);
+	//	m_square.draw(m_binder);
 		
+		for (auto &it : m_rooms) {
+			it.drawWalls(m_binder, m_shaders["shader"]);
 
+			it.drawLights(m_binder, m_shaders["lightSource"]);
+		}
 		/*********************************/
 		m_inputManager.update();
 		glfwPollEvents();
