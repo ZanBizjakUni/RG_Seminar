@@ -56,7 +56,7 @@ void MainGame::systemInit() {
 	m_shaders["billboard"] = new DEngine::ShadersComp();
 
 	m_player = new Player();
-	
+	m_collision = new Collision(m_player);
 
 }
 ///setShaders()
@@ -374,7 +374,10 @@ void MainGame::gameLoop(){
 		/*TODO: reorganise the code below*/
 		//m_square.rotate(1.0f, glm::vec3(0.0f, 0.0f, 1.0f));
 		m_player->update(m_inputManager.getCordsOffset());
-
+		m_collision->ifCollision(m_square);
+		if (m_collision->getCollision()) {
+			m_player->goBack();
+		}
 		/*m_lightSourceShader->use();
 		m_lightSourceShader->setMat4fv("model", m_light.returnTransMat());
 		m_lightSourceShader->setMat4fv("view", m_player->returnView());

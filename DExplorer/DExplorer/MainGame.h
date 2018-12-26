@@ -17,6 +17,8 @@
 
 #include "Player.h"
 #include "Room.h"
+#include "Collision.h"
+
 class MainGame
 {
 public:
@@ -56,6 +58,7 @@ private:
 	TexturedEntity m_square;
 	std::vector<Room> m_rooms;
 	Player* m_player;
+	Collision* m_collision;
 
 };
 

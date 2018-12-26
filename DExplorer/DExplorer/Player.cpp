@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "Collision.h"
 
 
 
@@ -17,6 +18,7 @@ Player::~Player() {}
 
 void Player::move(Direction d) {
 
+	m_prevPos = m_pos;
 	//m_pos += glm::vec3(0.0f, sin(m_move/m_stepLen)/m_stepHeight, 0.0f);
 	glm::vec3 t = glm::vec3(0.0f, 0.0f, 0.0f);
 	m_move += 0.05;
@@ -35,10 +37,10 @@ void Player::move(Direction d) {
 		m_pos += glm::normalize(glm::cross(m_front, m_up)) * (m_speed * (float)DEngine::deltaTime);
 
 	}
-
-
+	
 
 }
+
 
 void Player::toggleSprint() {
 	m_sprint = true;
