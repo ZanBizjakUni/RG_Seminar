@@ -18,6 +18,7 @@
 #include "Player.h"
 #include "Room.h"
 #include "Collision.h"
+#include "AABoundBox.h"
 
 class MainGame
 {
@@ -59,6 +60,6 @@ private:
 	std::vector<Room> m_rooms;
 	Player* m_player;
 	Collision* m_collision;
-
+	AABoundBox m_aabb;
 };
 

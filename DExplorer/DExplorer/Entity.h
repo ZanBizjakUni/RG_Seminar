@@ -10,6 +10,7 @@
 
 #include <Binder.h>
 #include <DProps.h>
+#include "AABoundBox.h"
 
 
 class Entity {
@@ -29,7 +30,8 @@ public:
 	void rotate(float deg, glm::vec3 axis);
 	void scale(glm::vec3 scl);
 	glm::vec3 getPos() { return glm::vec3(m_pos); }
-	glm::vec3 getBbox() { return glm::vec3(m_bbox); }
+	AABoundBox getBbox() { return m_aabb; }
+	AABoundBox setBbox(glm::vec3 min, glm::vec3 max) { this->m_aabb; }
 	bool isTextureless() { return m_textureless; }
 	void setChildren(Entity* child);
 	void setRadius(int r);
@@ -38,11 +40,12 @@ public:
 	void select();
 	void unselect();
 protected:
+	AABoundBox m_aabb;
+	
 	int m_radius;
 	std::string m_bind;
 	glm::vec4 m_pos;
 	glm::vec4 m_orgPos;
-	glm::vec4 m_bbox;
 	glm::mat4 m_model;
 	glm::mat4 m_parentModel;
 	glm::mat3 m_normalModel;

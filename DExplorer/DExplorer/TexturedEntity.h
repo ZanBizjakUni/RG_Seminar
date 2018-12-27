@@ -13,6 +13,7 @@ public:
 	void setTexBind(std::string texBind);
 	void draw(DEngine::Binder& b);
 protected:
+	AABoundBox m_aabb;
 	std::vector<std::string> m_texBind;
 };
 

@@ -58,6 +58,7 @@ void MainGame::systemInit() {
 
 	m_player = new Player();
 	m_collision = new Collision(m_player);
+	
 
 }
 ///setShaders()
@@ -190,10 +191,10 @@ void MainGame::controlManager() {
 
 void MainGame::enviromentInit() {
 	m_binder.setBinder("square", {
-	 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,0.0f,  0.0f, 1.0f,// top right
-	 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,0.0f,  0.0f, 1.0f,// bottom right
-	-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,0.0f,  0.0f, 1.0f,// bottom left
-	-0.5f,  0.5f, 0.0f, 0.0f, 1.0f,0.0f,  0.0f, 1.0f// top left 
+	 0.5f,  0.5f, 1.7f, 1.0f, 1.0f,0.0f,  0.0f, 1.0f,// top right
+	 0.5f, -0.5f, 1.7f, 1.0f, 0.0f,0.0f,  0.0f, 1.0f,// bottom right
+	-0.5f, -0.5f, 0.7f, 0.0f, 0.0f,0.0f,  0.0f, 1.0f,// bottom left
+	-0.5f,  0.5f, 0.7f, 0.0f, 1.0f,0.0f,  0.0f, 1.0f// top left 
 					   },
 	 { 3, 2, 3 },
 	 {  // note that we start from 0!

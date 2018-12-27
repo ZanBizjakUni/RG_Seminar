@@ -12,7 +12,7 @@ public:
 	void toggleSprint();
 	void unToggleSprint();
 	void update(glm::vec2 offset);
-	void goBack() { m_pos = m_prevPos; };
+	void goBack();
 	float getYaw() { return m_yaw; }
 private:
 	double m_move;

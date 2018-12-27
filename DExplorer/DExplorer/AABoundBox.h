@@ -9,19 +9,22 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "intersect.h"
 
 class AABoundBox {
 public:
-	AABoundBox(const glm::vec3& minExtend, const glm::vec3& maxExtend) :
-		m_minExtend(minExtend),
-		m_maxExtend(maxExtend) {}
+	AABoundBox() {};
+	AABoundBox(glm::vec4 minExtend, glm::vec4 maxExtend) :
+		m_maxExtend(maxExtend),
+		m_minExtend(minExtend) {};
+	~AABoundBox() {};
 
-	Intersect IntersectAABB(const AABoundBox& other) const;
 
-	inline const glm::vec3 getMinExtend() const { return m_minExtend; }
-	inline const glm::vec3 getMaxExtend() const { return m_maxExtend; }
+	//---entity bouding boxes---//
+	inline glm::vec4 getMinExtend() const { return m_minExtend; }
+	inline glm::vec4 getMaxExtend() const { return m_maxExtend; }
+	inline void setMinExtend(glm::vec4 min) { m_minExtend = min; }
+	inline void setMaxExtend(glm::vec4 max) { m_maxExtend = max; }
 private:
-	const glm::vec3 m_minExtend;
-	const glm::vec3 m_maxExtend;
+	glm::vec4 m_minExtend;
+	glm::vec4 m_maxExtend;
 };

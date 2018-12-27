@@ -1,7 +1,5 @@
 #include "Room.h"
 
-
-
 Room::Room() {}
 
 Room::Room(glm::vec3 pos, Player* plyr) {

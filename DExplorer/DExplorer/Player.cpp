@@ -71,3 +71,7 @@ void Player::update(glm::vec2 offset) {
 
 	Camera::update();
 }
+void Player::goBack() {
+	m_pos = m_prevPos;
+}
+

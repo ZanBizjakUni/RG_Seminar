@@ -19,6 +19,8 @@ void Entity::setRootEntity() {
 }
 
 void Entity::init(glm::vec4 p) {
+	m_aabb.setMaxExtend(glm::vec4(p.x + 1.0f, p.y + 1.0f, p.z + 1.0f, 1.0));
+	m_aabb.setMinExtend(glm::vec4(p.x - 0.5f, p.y - 0.5f, p.z - 0.5f, 1.0));
 	m_model = glm::translate(m_model, glm::vec3(p.x, p.y, p.z));
 	m_normalModel = glm::mat3(glm::transpose(glm::inverse(m_model)));
 	m_selected = false;
@@ -47,6 +49,9 @@ void Entity::translate(glm::vec3 t) {
 	for (auto it : m_children) {
 		it->translate(t);
 	}
+
+	m_aabb.AABoundBox::setMaxExtend(m_aabb.AABoundBox::getMaxExtend() * m_model);
+	m_aabb.AABoundBox::setMinExtend(m_aabb.AABoundBox::getMinExtend() * m_model);
 	
 }
 
@@ -61,7 +66,8 @@ void Entity::rotate(float deg, glm::vec3 axis) {
 void Entity::scale(glm::vec3 scl) {
 	m_model = glm::scale(m_model, scl);
 	m_normalModel = glm::mat3(glm::transpose(glm::inverse(m_model)));
-
+	m_aabb.AABoundBox::setMaxExtend(m_aabb.AABoundBox::getMaxExtend() * m_model);
+	m_aabb.AABoundBox::setMinExtend(m_aabb.AABoundBox::getMinExtend() * m_model);
 }
 
 void Entity::setChildren(Entity * child) {
