@@ -2,7 +2,7 @@
 
 
 
-Player::Player() {
+Player::Player(): Camera() {
 	m_speed = 2.5f;
 	m_sprint = false;
 	m_move = 0;
@@ -10,13 +10,27 @@ Player::Player() {
 	m_yaw = 270.0f;
 	m_stepHeight = 50; //higher value --> smaller height
 	m_stepLen = 0.2; //higher value --> longer step;
+	m_prevPos = m_pos;
+
+	m_corners.emplace_back(glm::vec4(m_pos.x - 0.1f, m_pos.y + 0.1f, m_pos.z + 0.1f, 1.0f));
+	m_corners.emplace_back(glm::vec4(m_pos.x + 0.1f, m_pos.y + 0.1f, m_pos.z + 0.1f, 1.0f));
+	m_corners.emplace_back(glm::vec4(m_pos.x + 0.1f, m_pos.y + 0.1f, m_pos.z - 0.1f, 1.0f));
+	m_corners.emplace_back(glm::vec4(m_pos.x - 0.1f, m_pos.y + 0.1f, m_pos.z - 0.1f, 1.0f));
+	m_corners.emplace_back(glm::vec4(m_pos.x - 0.1f, m_pos.y - 0.75f, m_pos.z + 0.1f, 1.0f));
+	m_corners.emplace_back(glm::vec4(m_pos.x + 0.1f, m_pos.y - 0.75f, m_pos.z + 0.1f, 1.0f));
+	m_corners.emplace_back(glm::vec4(m_pos.x + 0.1f, m_pos.y - 0.75f, m_pos.z - 0.1f, 1.0f));
+	m_corners.emplace_back(glm::vec4(m_pos.x - 0.1f, m_pos.y - 0.75f, m_pos.z - 0.1f, 1.0f));
+
+	m_minAABB = glm::vec3(m_pos.x - 0.1f, m_pos.y - 0.75f, m_pos.z - 0.1f);
+	m_maxAABB = glm::vec3(m_pos.x + 0.1f, m_pos.y + 0.1f, m_pos.z + 0.1f);
+
 }
 
 
 Player::~Player() {}
 
 void Player::move(Direction d) {
-
+	m_prevPos = m_pos;
 	//m_pos += glm::vec3(0.0f, sin(m_move/m_stepLen)/m_stepHeight, 0.0f);
 	glm::vec3 t = glm::vec3(0.0f, 0.0f, 0.0f);
 	m_move += 0.05;
@@ -36,7 +50,17 @@ void Player::move(Direction d) {
 
 	}
 
+	m_corners[0] = (glm::vec4(m_pos.x - 0.1f, m_pos.y + 0.1f, m_pos.z + 0.1f, 1.0f));
+	m_corners[1] = (glm::vec4(m_pos.x + 0.1f, m_pos.y + 0.1f, m_pos.z + 0.1f, 1.0f));
+	m_corners[2] = (glm::vec4(m_pos.x + 0.1f, m_pos.y + 0.1f, m_pos.z - 0.1f, 1.0f));
+	m_corners[3] = (glm::vec4(m_pos.x - 0.1f, m_pos.y + 0.1f, m_pos.z - 0.1f, 1.0f));
+	m_corners[4] = (glm::vec4(m_pos.x - 0.1f, m_pos.y - 0.75f, m_pos.z + 0.1f, 1.0f));
+	m_corners[5] = (glm::vec4(m_pos.x + 0.1f, m_pos.y - 0.75f, m_pos.z + 0.1f, 1.0f));
+	m_corners[6] = (glm::vec4(m_pos.x + 0.1f, m_pos.y - 0.75f, m_pos.z - 0.1f, 1.0f));
+	m_corners[7] = (glm::vec4(m_pos.x - 0.1f, m_pos.y - 0.75f, m_pos.z - 0.1f, 1.0f));
 
+	m_minAABB = glm::vec3(m_pos.x - 0.1f, m_pos.y - 0.75f, m_pos.z - 0.1f);
+	m_maxAABB = glm::vec3(m_pos.x + 0.1f, m_pos.y + 0.1f, m_pos.z + 0.1f);
 
 }
 
@@ -68,4 +92,23 @@ void Player::update(glm::vec2 offset) {
 
 
 	Camera::update();
+	
+	
 }
+
+void Player::setBack(int d) {
+	switch (d) {
+	case 1:
+		m_pos = glm::vec3(m_prevPos.x, m_pos.y, m_pos.z);
+		break;
+	case 2:
+		m_pos = glm::vec3(m_pos.x, m_prevPos.y, m_pos.z);
+		break;
+	case 3:
+		m_pos = glm::vec3(m_pos.x, m_pos.y, m_prevPos.z);
+		break;
+	}
+	//m_pos = m_prevPos;
+}
+
+

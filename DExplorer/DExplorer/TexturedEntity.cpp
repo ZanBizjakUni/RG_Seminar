@@ -22,7 +22,7 @@ void TexturedEntity::setTexBind(std::string texBind) {
 }
 
 void TexturedEntity::draw(DEngine::Binder& b) {
-	for (GLubyte i = 0; i < m_texBind.size(); i++) {
+	for (GLubyte i = 0; i < m_texBind.size(); i++) { 
 		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, b.getTextureBinder(m_texBind[i]));
 	}

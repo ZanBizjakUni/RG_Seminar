@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <vector>
+#include <memory>
 namespace DEngine {
 
 	class ShadersComp {

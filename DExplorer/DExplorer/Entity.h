@@ -32,17 +32,24 @@ public:
 	bool isTextureless() { return m_textureless; }
 	void setChildren(Entity* child);
 	void setRadius(int r);
+	int getRadius() { return m_radius; }
+	std::string getBind() { return m_bind; }
 	void translateByParent(glm::mat4 parentMat);
 	bool isSeleced() { return m_selected; }
 	void select();
 	void unselect();
+	glm::vec3 getMinAABB() { return m_minAABB; }
+	glm::vec3 getMaxAABB() { return m_maxAABB; }
+	glm::vec3 getTransformedMinAABB() { return m_model * m_minAABB; }
+	glm::vec3 getTransformedMaxAABB() { return m_model * m_maxAABB; }
 protected:
-	int m_radius;
+	float m_radius;
 	std::string m_bind;
 	glm::vec4 m_pos;
-	glm::vec4 m_orgPos;
+	glm::vec4 m_minAABB;
+	glm::vec4 m_maxAABB;
+	std::vector<glm::vec4> m_corners;
 	glm::mat4 m_model;
-	glm::mat4 m_parentModel;
 	glm::mat3 m_normalModel;
 	bool m_textureless;
 	bool m_selected;

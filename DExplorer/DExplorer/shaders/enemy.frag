@@ -14,6 +14,8 @@ uniform vec3 lightColor[1];
 uniform vec3 viewPos;
 uniform vec3[5] lightPos;
 uniform int selected;
+uniform vec2 UV;
+uniform vec2 offset;
 
 void main(){
       vec3 norm = normalize(Normal);
@@ -41,12 +43,12 @@ void main(){
             diffSpec += diffuse + specular;
       }
       diffSpec = vec3(min(diffSpec.x, 1.0f), min(diffSpec.y, 1.0f), min(diffSpec.z, 1.0f) );
-      result = vec4((ambient + (diffSpec)), 1.0f) * texture(texture1, TexCoord) * vec4(1.0, 1.0, 1.0, 0.0f);
+      result = vec4((ambient + (diffSpec)), 1.0f) * texture(texture1, vec2(TexCoord.x * UV.x, TexCoord.y * UV.y)) * vec4(1.0, 1.0, 1.0, 0.0f);
 
       if(selected == 1){
             result += vec4(0.3f, 0.0f, 0.0f, 0.0f);
       }
-      FragColor = texture(texture1, TexCoord);
+      FragColor = texture(texture1, vec2(TexCoord.x + (UV.x * offset.x), TexCoord.y + (UV.y * offset.y)));
 
 }
 

@@ -1,0 +1,16 @@
+Zaporedje .lvl datotek:
+int: število, ki opisuje koliko sob je v nivoju (m_rooms.size())
+----ZAČETEK SOBE------
+	int: število, ki opisuje število zidov je v sobi (m_walls.size());
+		Orientation: Vrednost enum classa tipa Orientation;
+		int: število, ki opisuje koliko tekstur ima zid bindan;
+			int: število, ki opisuje dolžino m_texBind stringa
+			char*: niz podan v m_texBind z dolžino opisano vrstico višje
+		int: Entity::m_radius
+		int: Entity::m_bind.size()
+		char*: Entity::m_bind
+		float*: Entity::m_pos, 4 values
+		float*: Entity::m_model, 16 values;
+		float*: Entity::m_normalModel, 9 values;
+		bool: Entity::m_textureless;
+		bool: Entity::m_selected;

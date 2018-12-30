@@ -4,7 +4,7 @@ namespace DEngine {
 
 	Camera::Camera() {
 		m_projection = glm::perspective(glm::radians(fov), (float)width / (float)height, 0.1f, 100.0f);
-
+		init();
 	}
 
 

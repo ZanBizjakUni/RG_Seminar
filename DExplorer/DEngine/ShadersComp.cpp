@@ -90,7 +90,7 @@ namespace DEngine {
 
 	void ShadersComp::set3fv(const std::string & name, std::vector<glm::vec3> v) {
 		GLfloat* arr = &v[0].x;
-		glUniform3fv(m_programID, v.size(), arr);
+		glUniform3fv(m_programID, v.size(), glm::value_ptr(v[0]));
 	}
 
 	void ShadersComp::set2f(const std::string & name, glm::vec2 v) {

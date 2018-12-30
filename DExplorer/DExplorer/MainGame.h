@@ -14,9 +14,12 @@
 #include <ShadersComp.h>
 #include <Ignition.h>
 #include <Camera.h>
+#include <CollisionManager.h>
 
 #include "Player.h"
 #include "Room.h"
+#include "Enemy.h"
+#include "Door.h"
 class MainGame
 {
 public:
@@ -55,7 +58,10 @@ private:
 	std::vector<TexturedEntity> m_cubes;
 	TexturedEntity m_square;
 	std::vector<Room> m_rooms;
+	DEngine::CollisionManager m_collisionManager;
 	Player* m_player;
+	Enemy m_enemy;
+	Door m_door; 
 
 };
 
