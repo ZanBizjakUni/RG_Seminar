@@ -18,7 +18,7 @@ private:
 	glm::vec2 m_offset = glm::vec2(0.1f, 0.2f);
 	glm::vec3 m_pos = Entity::getPos();
 	glm::vec3 m_dir;
-	float m_speed = 0.005f;
+	float m_speed = 0.5f;
 	int m_status; 
 	float m_health = 1.0;
 };

@@ -10,15 +10,13 @@ Enemy::~Enemy() {}
 
 void Enemy::update(glm::vec3 playerPos) {
 	glm::vec3 deltaPos = playerPos - m_pos;
+	float distance = glm::distance(playerPos, m_pos);
 	if (m_health <= 0) {
 		m_status = (int)State::DEAD;
 	}
-	else if (deltaPos.x <= 0.01f) {
-		if (deltaPos.y <= 0.01f ) {
-			if (deltaPos.z <= 0.01f) {
-				m_status = (int)State::ATTACK;
-			}
-		}
+	
+	else if (distance < 0.5f) {
+		m_status = (int)State::ATTACK;
 	}
 	else
 	{
@@ -35,11 +33,11 @@ void Enemy::update(glm::vec3 playerPos) {
 void Enemy::move(glm::vec3 deltaPos) {
 	m_dir = glm::normalize(deltaPos);
 	if (deltaPos.x < 0.0f && deltaPos.y < 0.0f && deltaPos.z < 0.0f) {
-		m_pos -= m_dir * m_speed;
+		m_pos -= m_dir * (m_speed * (float)DEngine::deltaTime);
 	}
 	else
 	{
-		m_pos += m_dir * m_speed;
+		m_pos += m_dir * (m_speed * (float)DEngine::deltaTime);
 	}
 	
 	//Entity::translate(m_pos);
