@@ -475,7 +475,8 @@ void MainGame::gameLoop(){
 	//	m_shaders["billboard"]->set1i("arrSize", 1);
 
 		m_enemy.draw(m_binder);
-		m_enemy.update();
+		glm::vec3 playerPos = m_player->getPos();
+		m_enemy.update(playerPos);
 	/*	for (auto &it : m_rooms) {
 			it.drawWalls(m_binder, m_shaders["shader"]);
 
