@@ -16,10 +16,10 @@ Player::Player(): Camera() {
 	m_corners.emplace_back(glm::vec4(m_pos.x + 0.1f, m_pos.y + 0.1f, m_pos.z + 0.1f, 1.0f));
 	m_corners.emplace_back(glm::vec4(m_pos.x + 0.1f, m_pos.y + 0.1f, m_pos.z - 0.1f, 1.0f));
 	m_corners.emplace_back(glm::vec4(m_pos.x - 0.1f, m_pos.y + 0.1f, m_pos.z - 0.1f, 1.0f));
-	m_corners.emplace_back(glm::vec4(m_pos.x - 0.1f, m_pos.y - 0.75f, m_pos.z + 0.1f, 1.0f));
-	m_corners.emplace_back(glm::vec4(m_pos.x + 0.1f, m_pos.y - 0.75f, m_pos.z + 0.1f, 1.0f));
-	m_corners.emplace_back(glm::vec4(m_pos.x + 0.1f, m_pos.y - 0.75f, m_pos.z - 0.1f, 1.0f));
-	m_corners.emplace_back(glm::vec4(m_pos.x - 0.1f, m_pos.y - 0.75f, m_pos.z - 0.1f, 1.0f));
+	m_corners.emplace_back(glm::vec4(m_pos.x - 0.1f, m_pos.y - 0.5f, m_pos.z + 0.1f, 1.0f));
+	m_corners.emplace_back(glm::vec4(m_pos.x + 0.1f, m_pos.y - 0.5f, m_pos.z + 0.1f, 1.0f));
+	m_corners.emplace_back(glm::vec4(m_pos.x + 0.1f, m_pos.y - 0.5f, m_pos.z - 0.1f, 1.0f));
+	m_corners.emplace_back(glm::vec4(m_pos.x - 0.1f, m_pos.y - 0.5f, m_pos.z - 0.1f, 1.0f));
 
 	m_minAABB = glm::vec3(m_pos.x - 0.1f, m_pos.y - 0.75f, m_pos.z - 0.1f);
 	m_maxAABB = glm::vec3(m_pos.x + 0.1f, m_pos.y + 0.1f, m_pos.z + 0.1f);

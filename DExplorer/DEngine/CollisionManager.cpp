@@ -13,7 +13,7 @@ namespace DEngine {
 			if (x >= std::abs(bMinAABB.x - aMaxAABB.x)) {
 				x = std::abs(bMinAABB.x - aMaxAABB.x);
 			}
-			if (aMinAABB.y <= bMinAABB.y && aMaxAABB.y >= bMinAABB.y) {
+			if (aMinAABB.y <= bMaxAABB.y && aMaxAABB.y >= bMinAABB.y) {
 				float y = std::abs(aMinAABB.y - bMaxAABB.y);
 				if (y >= std::abs(bMinAABB.y - aMaxAABB.y)) {
 					y = std::abs(bMinAABB.y - aMaxAABB.y);
