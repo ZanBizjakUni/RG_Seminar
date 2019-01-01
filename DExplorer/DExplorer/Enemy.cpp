@@ -1,7 +1,7 @@
 #include "Enemy.h"
 
 
-enum class State { IDLE = 0, MOVING = 2, ATTACK = 1, DEAD };
+enum class State { IDLE = 4, MOVING = 2, ATTACK = 1, DEAD = 0 };
 
 Enemy::Enemy() {}
 
@@ -14,13 +14,23 @@ void Enemy::update(glm::vec3 playerPos) {
 	if (m_health <= 0) {
 		m_status = (int)State::DEAD;
 	}
-	
 	else if (distance < 0.5f) {
 		m_status = (int)State::ATTACK;
 	}
-	else
+	else if (distance < 3.0f)
 	{
-		m_status = (int)State::MOVING;
+		if (m_status == (int)State::MOVING && distance < 10.0f) {
+			m_status = (int)State::MOVING;
+		}
+		else if (m_status == (int)State::IDLE) {
+			m_status = (int)State::MOVING;
+		}
+		else if (m_status == (int)State::ATTACK && distance > 1.5f) {
+			m_status = (int)State::MOVING;
+		}
+	}
+	else {
+		m_status = (int)State::IDLE;
 	}
 	m_texCoord.y = m_status;
 	m_texCoord.x = (int)(glfwGetTime() * 5) % 10;
