@@ -145,10 +145,10 @@ void MainGame::controlManager() {
 		m_rooms.back().selectFirstWall();
 	}
 	if (m_inputManager.isKeyPressed(GLFW_KEY_N)) {
-		m_rooms.back().addWall(Orientation::FLOOR);
+		m_rooms.back().addWall(WallType::FLOOR);
 	}
 	if (m_inputManager.isKeyPressed(GLFW_KEY_M)) {
-		m_rooms.back().addWall(Orientation::WALL);
+		m_rooms.back().addWall(WallType::WALL);
 	}
 	if (m_inputManager.isKeyPressed(GLFW_KEY_R)) {
 		m_rooms.back().rotateSelected();
@@ -156,6 +156,10 @@ void MainGame::controlManager() {
 	if (m_inputManager.isKeyPressed(GLFW_KEY_L)) {
 		m_rooms.back().addLight();
 	}
+	if (m_inputManager.isKeyPressed(GLFW_KEY_B)) {
+		m_rooms.back().addDoor();
+	}
+
 	if (m_inputManager.isKeyPressed(GLFW_KEY_E)) {
 		if (m_collisionManager.pointCollision(m_player->getLookingAt(), m_door.getMinAABB(), m_door.getMaxAABB())) {
 			m_door.openClose();
@@ -353,8 +357,8 @@ void MainGame::enviromentInit() {
 //	m_square.setChildren(&m_light);
 
 	m_rooms.emplace_back(Room(glm::vec3(0.0f, 0.0f, 0.0f), m_player));
-	m_rooms.back().addWall(Orientation::FLOOR);
-	m_rooms.back().addLight();
+	//m_rooms.back().addWall(Orientation::FLOOR);
+	//m_rooms.back().addLight();
 
 	//m_shader->use();
 	m_shaders["shader"]->use();
@@ -433,7 +437,7 @@ void MainGame::gameLoop(){
 
 	//	m_light.draw(m_binder);
 	*/
-		m_shaders["shader"]->use();
+	/*	m_shaders["shader"]->use();
 		m_shaders["shader"]->setMat4fv("model", m_square.returnTransMat());
 		m_shaders["shader"]->setMat4fv("view", m_player->returnView());
 		m_shaders["shader"]->setMat4fv("projection", m_player->returnProjection());
@@ -441,7 +445,7 @@ void MainGame::gameLoop(){
 		m_shaders["shader"]->set3f("lightColor", m_light.getColor());
 		m_shaders["shader"]->set3f("viewPos", m_player->getPos());
 		m_shaders["shader"]->set3f("lightPos", m_light.getPos());
-		m_shaders["shader"]->set1i("arrSize", 1);
+		m_shaders["shader"]->set1i("arrSize", 1);*/
 
 		/*m_shader->use();
 		m_shader->setMat4fv("model", m_square.returnTransMat());
@@ -454,13 +458,20 @@ void MainGame::gameLoop(){
 		m_shader->set1i("arrSize", 1);*/
 //		m_shaders["shader"]->set3f("worldSpace", m_square.getPos());
 
-		m_square.draw(m_binder);
+	/*	m_square.draw(m_binder);
 
 		m_shaders["shader"]->setMat4fv("model", m_door.returnTransMat());
 		m_shaders["shader"]->setMat4fv("projection", m_player->returnProjection());
 		m_shaders["shader"]->setMat3fv("normModel", m_door.getNormModel());
 		m_door.draw(m_binder);
+		*/
+		for (auto &it : m_rooms) {
+			it.drawWalls(m_binder, m_shaders["shader"]);
 
+			it.drawLights(m_binder, m_shaders["lightSource"]);
+
+			it.drawDoors(m_binder, m_shaders["shader"]);
+		}
 		m_shaders["billboard"]->use();
 		m_shaders["billboard"]->setMat4fv("model", m_enemy.returnTransMat());
 		m_shaders["billboard"]->setMat4fv("view", m_player->returnView());
@@ -475,21 +486,15 @@ void MainGame::gameLoop(){
 	//	m_shaders["billboard"]->set1i("arrSize", 1);
 
 		m_enemy.draw(m_binder);
-		glm::vec3 playerPos = m_player->getPos();
-		m_enemy.update(playerPos);
-	/*	for (auto &it : m_rooms) {
-			it.drawWalls(m_binder, m_shaders["shader"]);
-
-			it.drawLights(m_binder, m_shaders["lightSource"]);
-		}*/
+		m_enemy.update();
 		/*********************************/
 		glfwPollEvents();
 		controlManager();
-		m_player->setBack(m_collisionManager.checkCollision(m_player->getMinAABB(), m_player->getMaxAABB(), m_square.getMinAABB(), m_square.getMaxAABB()));
+	//	m_player->setBack(m_collisionManager.checkCollision(m_player->getMinAABB(), m_player->getMaxAABB(), m_square.getMinAABB(), m_square.getMaxAABB()));
+		m_rooms.back().wallColider();
 		m_player->update(m_inputManager.getCordsOffset());
 		m_inputManager.update();
 		//printf_s("%d\n", m_collisionManager.checkCollision(m_player->getPos(), m_square.getMinAABB(), m_square.getMaxAABB()));
-		printf_s("%d\n", m_collisionManager.pointCollision(m_player->getLookingAt(), m_door.getMinAABB(), m_door.getMaxAABB()));
 
 		glfwSwapBuffers(m_ignition.getWindow());
 		DEngine::endTime = glfwGetTime();

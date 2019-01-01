@@ -1,18 +1,24 @@
 #pragma once
 #include "TexturedEntity.h"
 
-enum class Orientation { WALL, FLOOR };
+enum class WallType { WALL, FLOOR };
+
+enum class Orientation{NORTH, SOUTH, EAST, WEST, UP, DOWN};
 
 
 class Wall: public TexturedEntity {
 public:
 	Wall();
-	Wall(std::string bindName, glm::vec4 p) : TexturedEntity(bindName, p) {}
+	Wall(std::string bindName, glm::vec4 p);
 	~Wall();
 
+	void setType(WallType o);
 	void setOrientation(Orientation o);
-	Orientation getOrientation() { return m_ort; }
+
+	WallType getType() { return m_type; }
+	Orientation getOrientation() { return m_orientation; }
 private:
-	Orientation m_ort;
+	Orientation m_orientation;
+	WallType m_type;
 };
 

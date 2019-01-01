@@ -6,7 +6,7 @@ Entity::Entity() {}
 Entity::Entity(std::string bindName, glm::vec4 p) {
 	m_bind = bindName;
 	m_textureless = true;
-	m_color = glm::vec3(1.0f, 1.0f, 1.0f);
+	m_color = glm::vec3(0.0f, 0.0f, 0.0f);
 
 	init(p);
 }
@@ -32,6 +32,18 @@ void Entity::init(glm::vec4 p) {
 		m_corners.emplace_back(glm::vec4(p.x + m_radius, p.y + m_radius, p.z + 0.1f, 1.0f));
 		m_corners.emplace_back(glm::vec4(p.x + m_radius, p.y + m_radius, p.z - 0.1f, 1.0f));
 		m_corners.emplace_back(glm::vec4(p.x - m_radius, p.y + m_radius, p.z - 0.1f, 1.0f));
+	}
+	else if (m_bind == "cube") {
+		m_minAABB = glm::vec4(p.x - m_radius, p.y - m_radius, p.z - m_radius, 1.0f);
+		m_maxAABB = glm::vec4(p.x + m_radius, p.y + m_radius, p.z + m_radius, 1.0f);
+		m_corners.emplace_back(glm::vec4(p.x - m_radius, p.y - m_radius, p.z + m_radius, 1.0f));
+		m_corners.emplace_back(glm::vec4(p.x + m_radius, p.y - m_radius, p.z + m_radius, 1.0f));
+		m_corners.emplace_back(glm::vec4(p.x + m_radius, p.y - m_radius, p.z - m_radius, 1.0f));
+		m_corners.emplace_back(glm::vec4(p.x - m_radius, p.y - m_radius, p.z - m_radius, 1.0f));
+		m_corners.emplace_back(glm::vec4(p.x - m_radius, p.y + m_radius, p.z + m_radius, 1.0f));
+		m_corners.emplace_back(glm::vec4(p.x + m_radius, p.y + m_radius, p.z + m_radius, 1.0f));
+		m_corners.emplace_back(glm::vec4(p.x + m_radius, p.y + m_radius, p.z - m_radius, 1.0f));
+		m_corners.emplace_back(glm::vec4(p.x - m_radius, p.y + m_radius, p.z - m_radius, 1.0f));
 	}
 	m_model = glm::translate(m_model, glm::vec3(p.x, p.y, p.z));
 	m_normalModel = glm::mat3(glm::transpose(glm::inverse(m_model)));
