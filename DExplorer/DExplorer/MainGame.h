@@ -62,6 +62,7 @@ private:
 	Player* m_player;
 	Enemy m_enemy;
 	Door m_door; 
+	Wall m_wall;
 
 };
 

@@ -83,7 +83,6 @@ void Player::update(glm::vec2 offset) {
 	if (m_pitch < -89.0f) {
 		m_pitch = -89.0f;
 	}
-
 	m_front.x = cos(glm::radians(m_pitch)) * cos(glm::radians(m_yaw));
 	m_front.y = sin(glm::radians(m_pitch));
 	m_front.z = cos(glm::radians(m_pitch)) * sin(glm::radians(m_yaw));
@@ -109,6 +108,23 @@ void Player::setBack(int d) {
 		break;
 	}
 	//m_pos = m_prevPos;
+}
+
+void Player::gravity() {
+	float downfall = DEngine::gravity * DEngine::deltaTime;
+	m_prevPos = m_pos;
+	m_pos.y -= downfall;
+	m_corners[0] = (glm::vec4(m_pos.x - 0.1f, m_pos.y + 0.1f, m_pos.z + 0.1f, 1.0f));
+	m_corners[1] = (glm::vec4(m_pos.x + 0.1f, m_pos.y + 0.1f, m_pos.z + 0.1f, 1.0f));
+	m_corners[2] = (glm::vec4(m_pos.x + 0.1f, m_pos.y + 0.1f, m_pos.z - 0.1f, 1.0f));
+	m_corners[3] = (glm::vec4(m_pos.x - 0.1f, m_pos.y + 0.1f, m_pos.z - 0.1f, 1.0f));
+	m_corners[4] = (glm::vec4(m_pos.x - 0.1f, m_pos.y - 0.75f, m_pos.z + 0.1f, 1.0f));
+	m_corners[5] = (glm::vec4(m_pos.x + 0.1f, m_pos.y - 0.75f, m_pos.z + 0.1f, 1.0f));
+	m_corners[6] = (glm::vec4(m_pos.x + 0.1f, m_pos.y - 0.75f, m_pos.z - 0.1f, 1.0f));
+	m_corners[7] = (glm::vec4(m_pos.x - 0.1f, m_pos.y - 0.75f, m_pos.z - 0.1f, 1.0f));
+
+	m_minAABB = glm::vec3(m_pos.x - 0.1f, m_pos.y - 0.75f, m_pos.z - 0.1f);
+	m_maxAABB = glm::vec3(m_pos.x + 0.1f, m_pos.y + 0.1f, m_pos.z + 0.1f);
 }
 
 

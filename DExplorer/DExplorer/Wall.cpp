@@ -4,6 +4,14 @@
 
 Wall::Wall() {}
 
+Wall::Wall(std::ifstream & file): TexturedEntity(file) {
+	int tmp;
+	file.read((char*)&tmp, sizeof(int));
+	m_orientation = (Orientation)tmp;
+	file.read((char*)&tmp, sizeof(int));
+	m_type = (WallType)tmp;
+}
+
 Wall::Wall(std::string bindName, glm::vec4 p) : TexturedEntity(bindName, p) {
 	
 }
@@ -51,4 +59,12 @@ void Wall::setOrientation(Orientation o) {
 		break;
 
 	}
+}
+
+void Wall::writeToFile(std::ofstream& file) {
+	TexturedEntity::writeToFile(file);
+	int tmp = (int)m_orientation;
+	file.write((char*)&tmp, sizeof(int));
+	tmp = (int)m_type;
+	file.write((char*)&tmp, sizeof(int));
 }

@@ -3,6 +3,48 @@
 
 Room::Room() {}
 
+Room::Room(std::ifstream & file, Player * p) {
+	m_plyr = p;
+	int tmp;
+	file.read((char*)&tmp, sizeof(int));
+	for (int i = 0; i < tmp; i++) {
+		m_walls.emplace_back(Wall(file));
+	}
+	file.read((char*)&tmp, sizeof(int));
+	for (int i = 0; i < tmp; i++) {
+		m_light.lights.emplace_back(Entity(file));
+	}
+	file.read((char*)&m_light.lightSize, sizeof(int));
+	file.read((char*)&tmp, sizeof(int));
+	for (int i = 0; i < tmp; i++) {
+		glm::vec3 a;
+		file.read((char*)glm::value_ptr(a), 3 * sizeof(float));
+		m_light.lightPos.emplace_back(a);
+	}
+	file.read((char*)&tmp, sizeof(int));
+	for (int i = 0; i < tmp;  i++) {
+		glm::vec3 a;
+		file.read((char*)glm::value_ptr(a), 3 * sizeof(float));
+		m_light.lightCol.emplace_back(a);
+	}
+
+	file.read((char*)&tmp, sizeof(int));
+	for (int i = 0; i < tmp; i++) {
+		m_doors.emplace_back(Door(file));
+	}
+	file.read((char*)glm::value_ptr(m_model), 16 * sizeof(float));
+	file.read((char*)glm::value_ptr(m_pos), 3 * sizeof(float));
+	file.read((char*)&m_selID, sizeof(int));
+	file.read((char*)&tmp, sizeof(int));
+	m_stype = (SelType)tmp;
+	file.read((char*)&tmp, sizeof(int));
+	for (int i = 0; i < tmp; i++) {
+		m_enemies.emplace_back(Enemy(file));
+	}
+
+
+}
+
 Room::Room(glm::vec3 pos, Player* plyr) {
 	m_pos = pos;
 	m_plyr = plyr;
@@ -47,7 +89,9 @@ void Room::addWall(WallType ort) {
 	else if (m_stype == SelType::WALLS) {
 		m_walls[m_selID].unselect();
 	}
-
+	for (auto& it : m_enemies) {
+		it.unselect();
+	}
 	m_stype = SelType::WALLS;
 	m_selID = m_walls.size() - 1;
 	m_walls[m_selID].select();
@@ -109,9 +153,38 @@ void Room::addDoor() {
 	for (auto& it : m_doors) {
 		it.unselect();
 	}
+	for (auto& it : m_enemies) {
+		it.unselect();
+	}
 	m_stype = SelType::DOORS;
 	m_selID = m_doors.size() - 1;
 	m_doors.back().select();
+}
+
+void Room::addEnemy() {
+	if (m_enemies.empty()) {
+		m_enemies.emplace_back(Enemy("skeleton", glm::vec4(m_pos,1.0f)));
+	}
+	else {
+		m_enemies.emplace_back(Enemy("skeleton", glm::vec4(m_enemies.back().getPos(),1.0f)));
+	}
+	for (auto& it : m_walls) {
+		it.unselect();
+	}
+	for (auto& it : m_light.lights) {
+		it.unselect();
+	}
+	for (auto& it : m_doors) {
+		it.unselect();
+	}
+	for (auto& it : m_enemies) {
+		it.unselect();
+	}
+
+	m_enemies.back().setTexBind("textures/skeleton.png");
+	m_stype = SelType::ENEMY;
+	m_selID = m_enemies.size() - 1;
+	m_enemies.back().select();
 }
 
 
@@ -163,6 +236,28 @@ void Room::drawDoors(DEngine::Binder binder, DEngine::ShadersComp * shdr) {
 	}
 }
 
+void Room::drawEnemies(DEngine::Binder binder, DEngine::ShadersComp * shdr) {
+	shdr->use();
+	for (auto& it : m_enemies) {
+		shdr->use();
+		shdr->setMat4fv("model", it.returnTransMat());
+		shdr->setMat4fv("view", m_plyr->returnView());
+		shdr->setMat4fv("projection", m_plyr->returnProjection());
+		shdr->setMat3fv("normModel", it.getNormModel());
+		shdr->set3f("worldSpace", it.getPos());
+		shdr->set3fv("lightColor", m_light.lightCol);
+		shdr->set3f("viewPos", m_plyr->getPos());
+		shdr->set3fv("lightPos", m_light.lightPos);
+		shdr->set2f("UV", it.getTexCoord());
+		shdr->set2f("offset", it.getOffset());
+		shdr->set1i("selected", it.isSeleced());
+
+		it.draw(binder);
+	}
+}
+
+
+
 void Room::selectFirstWall() {
 	for (auto &it : m_walls) {
 		it.unselect();
@@ -172,6 +267,9 @@ void Room::selectFirstWall() {
 		it.unselect();
 	}
 	for (auto&it : m_doors) {
+		it.unselect();
+	}
+	for (auto& it : m_enemies) {
 		it.unselect();
 	}
 	if (!m_walls.empty()) {
@@ -192,6 +290,9 @@ void Room::selectFirstLight() {
 	for (auto&it : m_doors) {
 		it.unselect();
 	}
+	for (auto& it : m_enemies) {
+		it.unselect();
+	}
 	if (!m_light.lights.empty()) {
 		m_light.lights[0].select();
 		m_selID = 0;
@@ -209,12 +310,39 @@ void Room::selectFirstDoor() {
 	for (auto& it : m_doors) {
 		it.unselect();
 	}
+	for (auto& it : m_enemies) {
+		it.unselect();
+	}
 	if (!m_doors.empty()) {
 		m_doors[0].select();
 		m_selID = 0;
 		m_stype = SelType::DOORS;
 	}
 }
+
+void Room::selectFistEnemy() {
+	for (auto &it : m_walls) {
+		it.unselect();
+
+	}
+	for (auto &it : m_light.lights) {
+		it.unselect();
+	}
+	for (auto&it : m_doors) {
+		it.unselect();
+	}
+	for (auto& it : m_enemies) {
+		it.unselect();
+	}
+	if (!m_enemies.empty()) {
+		m_enemies[0].select();
+		m_selID = 0;
+		m_stype = SelType::ENEMY;
+	}
+
+}
+
+
 
 
 
@@ -235,6 +363,10 @@ void Room::moveSelected(Move mv) {
 		else if (m_stype == SelType::DOORS) {
 			m_doors[m_selID].translate(glm::vec3(0.0f, 0.5f, 0.0f));
 		}
+		else if (m_stype == SelType::ENEMY) {
+			m_enemies[m_selID].translate(glm::vec3(0.0f, 0.5f, 0.0f));
+
+		}
 		break;	
 	case Move::DOWN:
 		if (m_stype == SelType::WALLS) {
@@ -252,6 +384,10 @@ void Room::moveSelected(Move mv) {
 		else if (m_stype == SelType::DOORS) {
 			m_doors[m_selID].translate(glm::vec3(0.0f, -0.5f, 0.0f));
 		}
+		else if (m_stype == SelType::ENEMY) {
+			m_enemies[m_selID].translate(glm::vec3(0.0f, -0.5f, 0.0f));
+
+		}
 		break;	
 	case Move::LEFT:
 		if (m_stype == SelType::WALLS) {
@@ -262,6 +398,10 @@ void Room::moveSelected(Move mv) {
 		}
 		else if (m_stype == SelType::DOORS) {
 			m_doors[m_selID].translate(glm::vec3(-0.5f, 0.0f, 0.0f));
+
+		}
+		else if (m_stype == SelType::ENEMY) {
+			m_enemies[m_selID].translate(glm::vec3(-0.5f, 0.0f, 0.0f));
 
 		}
 		break;
@@ -275,6 +415,10 @@ void Room::moveSelected(Move mv) {
 		}
 		else if (m_stype == SelType::DOORS) {
 			m_doors[m_selID].translate(glm::vec3(0.5f, 0.0f, 0.0f));
+
+		}
+		else if (m_stype == SelType::ENEMY) {
+			m_enemies[m_selID].translate(glm::vec3(0.5f, 0.0f, 0.0f));
 
 		}
 		break;
@@ -293,6 +437,10 @@ void Room::moveSelected(Move mv) {
 		else if (m_stype == SelType::DOORS) {
 			m_doors[m_selID].translate(glm::vec3(0.0f, 0.0f, -0.5f));
 		}
+		else if (m_stype == SelType::ENEMY) {
+			m_enemies[m_selID].translate(glm::vec3(0.0f, 0.0f, -0.5f));
+
+		}
 		break;
 	case Move::BACKWARD:
 		if (m_stype == SelType::WALLS) {
@@ -308,6 +456,10 @@ void Room::moveSelected(Move mv) {
 		}
 		else if (m_stype == SelType::DOORS) {
 			m_doors[m_selID].translate(glm::vec3(0.0f, 0.0f, 0.5f));
+		}
+		else if (m_stype == SelType::ENEMY) {
+			m_enemies[m_selID].translate(glm::vec3(0.0f, 0.0f, 0.5f));
+
 		}
 		break;	
 	}
@@ -340,6 +492,13 @@ void Room::selectNext() {
 		m_selID = m_selID % m_doors.size();
 		m_doors[m_selID].select();
 	}
+	else if (m_stype == SelType::ENEMY) {
+		m_enemies[m_selID].unselect();
+		m_selID++;
+		m_selID = m_selID % m_enemies.size();
+		m_enemies[m_selID].select();
+
+	}
 	
 }
 
@@ -361,6 +520,12 @@ void Room::selectPrev() {
 		m_selID--;
 		m_selID = m_selID % m_doors.size();
 		m_doors[m_selID].select();
+	}
+	else if (m_stype == SelType::ENEMY) {
+		m_enemies[m_selID].unselect();
+		m_selID--;
+		m_selID = m_selID % m_enemies.size();
+		m_enemies[m_selID].select();
 	}
 }
 
@@ -437,6 +602,16 @@ void Room::delSelected() {
 			}
 		}
 	}
+	else if (m_stype == SelType::ENEMY) {
+		if (!m_enemies.empty()) {
+			m_enemies[m_selID] = m_enemies.back();
+			m_enemies.pop_back();
+			if (!m_doors.empty()) {
+				m_selID--;
+				m_doors[m_selID].select();
+			}
+		}
+	}
 }
 
 void Room::wallColider() {
@@ -448,31 +623,45 @@ void Room::wallColider() {
 
 void Room::writeToFile(std::ofstream & file) {
 	int tmp = 0;
-	bool tmpB;
 	tmp = m_walls.size();
-	file.write((char*)&tmp, sizeof(tmp));
-	for (auto &it : m_walls) {
-		tmp = (int)it.getType();
-		file.write((char*)&tmp, sizeof(tmp));
-		tmp = it.getTex().size();
-		file.write((char*)&tmp, sizeof(tmp));
-		for (auto &it1 : it.getTex()) {
-			tmp = it1.size();
-			file.write((char*)&tmp, sizeof(tmp));
-			file.write((char*)it1.c_str(), tmp);
-		}
-		tmp = it.getRadius();
-		file.write((char*)&tmp, sizeof(tmp));
-		tmp = it.getBind().size();
-		file.write((char*)&tmp, sizeof(tmp));
-		file.write((char*)it.getBind().c_str(), it.getBind().size());
-		file.write((char*)glm::value_ptr(it.getPos()), 3*sizeof(float));
-		file.write((char*)glm::value_ptr(it.returnTransMat()), 16 * sizeof(float));
-		file.write((char*)glm::value_ptr(it.getNormModel()), 9 * sizeof(float));
-		tmpB = it.isTextureless();
-		file.write((char*)&tmpB, sizeof(bool));
-		tmpB = it.isSeleced();
-		file.write((char*)&tmpB, sizeof(bool));
-		file.write((char*)glm::value_ptr(it.getColor()), 3 * sizeof(float));
+	file.write((char*)&tmp, sizeof(int));
+	for (auto& it : m_walls) {
+		it.writeToFile(file);
+	}
+
+	//Light
+	tmp = m_light.lights.size();
+	file.write((char*)&tmp, sizeof(int));
+	for (auto& it : m_light.lights) {
+		it.writeToFile(file);
+	}
+	file.write((char*)&m_light.lightSize, sizeof(int));
+	tmp = m_light.lightPos.size();
+	file.write((char*)&tmp, sizeof(int));
+	for (auto& it : m_light.lightPos) {
+		DEngine::FileManager::write3f(file, it);
+	}
+	tmp = m_light.lightCol.size();
+	file.write((char*)&tmp, sizeof(int));
+	for (auto& it : m_light.lightCol) {
+		DEngine::FileManager::write3f(file, it);
+	}
+	//\Light
+
+	tmp = m_doors.size();
+	file.write((char*)&tmp, sizeof(int));
+	for (auto& it : m_doors) {
+		it.writeToFile(file);
+	}
+	DEngine::FileManager::writeM4(file, m_model);
+	DEngine::FileManager::write3f(file, m_pos);
+	file.write((char*)&m_selID, sizeof(int));
+	tmp = (int)m_stype;
+	file.write((char*)&tmp, sizeof(int));
+	tmp = m_enemies.size();
+	file.write((char*)&tmp, sizeof(int));
+	for (auto& it : m_enemies) {
+		it.writeToFile(file);
 	}
 }
+

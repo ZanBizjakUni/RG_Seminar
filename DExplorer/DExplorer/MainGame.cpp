@@ -159,12 +159,17 @@ void MainGame::controlManager() {
 	if (m_inputManager.isKeyPressed(GLFW_KEY_B)) {
 		m_rooms.back().addDoor();
 	}
+	if (m_inputManager.isKeyPressed(GLFW_KEY_P)) {
+		m_rooms.back().addEnemy();
+	}
 
 	if (m_inputManager.isKeyPressed(GLFW_KEY_E)) {
 		if (m_collisionManager.pointCollision(m_player->getLookingAt(), m_door.getMinAABB(), m_door.getMaxAABB())) {
 			m_door.openClose();
 		}
 	}
+
+
 
 	if (m_inputManager.isKeyPressed(GLFW_KEY_INSERT)) {
 		m_rooms.back().selectNext();
@@ -177,20 +182,18 @@ void MainGame::controlManager() {
 	}
 	if (m_inputManager.isKeyPressed(GLFW_KEY_F5)) {
 		std::ofstream file("test.lvl", std::ios::out | std::ios::binary);
-		for (auto& it : m_rooms) {
-			it.writeToFile(file);
-		}
+		printf_s("Saving level...\n");
+		m_rooms.back().writeToFile(file);
+		printf_s("Save complete!\n");
 		file.close();
 	}
-	if (m_inputManager.isKeyPressed(GLFW_KEY_Z)) {
-		m_square.rotate(45.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-	}
+
 
 	if (m_inputManager.isKeyPressed(GLFW_KEY_U)) {
-		m_square.translate(glm::vec3(-1.0f, 0.0f, 0.0f));
+		m_door.translate(glm::vec3(1.0f, 0.0f, 0.0f));
 	}
 	if (m_inputManager.isKeyPressed(GLFW_KEY_I)) {
-		m_square.translate(glm::vec3(0.0f, 0.0f, -1.0f));
+		m_door.translate(glm::vec3(0.0f, 0.0f, -1.0f));
 	}
 
 	if (m_inputManager.isKeyPressed(GLFW_KEY_LEFT)) {
@@ -341,22 +344,23 @@ void MainGame::enviromentInit() {
 	m_binder.setTextureBinder("textures/door.png");
 
 	/*INITIALISING OBJECTS*/
-	m_square = TexturedEntity("square", glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+	/*m_square = TexturedEntity("square", glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	m_square.setTexBind("textures/awesomeface.png");
-	//m_square.setTexBind("textures/wall.jpg");
+	m_square.setTexBind("textures/wall.jpg");*/
 
-	m_enemy = Enemy("skeleton", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-	m_enemy.setTexBind("textures/skeleton.png");
-
-	m_door = Door("square", glm::vec4(-1.0f, 0.0f, 0.0f, 1.0f));
-	m_door.setTexBind("textures/door.png");
-
+	//m_door = Door("square", glm::vec4(-1.0f, 0.0f, 0.0f, 1.0f));
+	//m_door.setTexBind("textures/door.png");
+//	std::ifstream file("test.lvl");
 	m_light = Entity("cube", glm::vec4(1.0f, 0.75f, -2.0f, 1.0f));
-	
-	m_square.setRootEntity();
-//	m_square.setChildren(&m_light);
+	//m_light = Entity(file);
+	//file.close();
 
-	m_rooms.emplace_back(Room(glm::vec3(0.0f, 0.0f, 0.0f), m_player));
+
+	//m_rooms.emplace_back(Room(glm::vec3(0.0f, 0.0f, 0.0f), m_player));
+	std::ifstream file("test.lvl");
+	m_rooms.emplace_back(Room(file, m_player));
+	file.close();
+	
 	//m_rooms.back().addWall(Orientation::FLOOR);
 	//m_rooms.back().addLight();
 
@@ -373,42 +377,10 @@ void MainGame::enviromentInit() {
 	//m_player->init();
 }
 
-///draw()
-/*
-* Draws all elements of the program
-*/
-void MainGame::draw() {
-	
-}
-
 ///gameLoop()
 /*
 * Main game loop, loops around until said otherwise
-*/
-
-
-/*
-if (it.isTextureless()) {
-				m_texturelessShader->use();
-				m_texturelessShader->setMat4fv("view", m_player->returnView());
-				m_texturelessShader->setMat4fv("projection", m_player->returnProjection());
-				m_texturelessShader->setMat4fv("model", it.returnTransMat());
-				m_texturelessShader->set3f("uColor", it.getColor());
-			}
-			else {
-				m_shader->use();
-				m_shader->setMat4fv("view", m_player->returnView());
-				m_shader->setMat4fv("projection", m_player->returnProjection());
-				m_shader->setMat4fv("model", it.returnTransMat());
-				m_shader->set3f("lightColor", m_lights[0].getColor());
-				m_shader->set3fv("lightPos", lightsPos);
-				m_shader->setMat3fv("normModel", it.getNormModel());
-				m_shader->set3f("viewPos", m_player->getPos());
-				m_shader->set1i("arrSize", (GLint)m_lights.size());
-			}
-			it.draw(m_binder);
-*/
-	
+*/	
 void MainGame::gameLoop(){
 	/*Stuff to reorganise in project ( following the tutorial )*/
 	
@@ -429,19 +401,19 @@ void MainGame::gameLoop(){
 		m_lightSourceShader->setMat4fv("projection", m_player->returnProjection());
 		m_lightSourceShader->set3f("lightColor", m_light.getColor());*/
 
-		/*m_shaders["lightSource"]->use();
+	/*	m_shaders["lightSource"]->use();
 		m_shaders["lightSource"]->setMat4fv("model", m_light.returnTransMat());
 		m_shaders["lightSource"]->setMat4fv("view", m_player->returnView());
 		m_shaders["lightSource"]->setMat4fv("projection", m_player->returnProjection());
 		m_shaders["lightSource"]->set3f("lightColor", m_light.getColor());
 
 	//	m_light.draw(m_binder);
-	*/
-	/*	m_shaders["shader"]->use();
-		m_shaders["shader"]->setMat4fv("model", m_square.returnTransMat());
+	
+		m_shaders["shader"]->use();
+		m_shaders["shader"]->setMat4fv("model", m_door.returnTransMat());
 		m_shaders["shader"]->setMat4fv("view", m_player->returnView());
 		m_shaders["shader"]->setMat4fv("projection", m_player->returnProjection());
-		m_shaders["shader"]->setMat3fv("normModel", m_square.getNormModel());
+		m_shaders["shader"]->setMat3fv("normModel", m_door.getNormModel());
 		m_shaders["shader"]->set3f("lightColor", m_light.getColor());
 		m_shaders["shader"]->set3f("viewPos", m_player->getPos());
 		m_shaders["shader"]->set3f("lightPos", m_light.getPos());
@@ -458,8 +430,8 @@ void MainGame::gameLoop(){
 		m_shader->set1i("arrSize", 1);*/
 //		m_shaders["shader"]->set3f("worldSpace", m_square.getPos());
 
-	/*	m_square.draw(m_binder);
-
+	//	m_door.draw(m_binder);
+/*
 		m_shaders["shader"]->setMat4fv("model", m_door.returnTransMat());
 		m_shaders["shader"]->setMat4fv("projection", m_player->returnProjection());
 		m_shaders["shader"]->setMat3fv("normModel", m_door.getNormModel());
@@ -471,7 +443,11 @@ void MainGame::gameLoop(){
 			it.drawLights(m_binder, m_shaders["lightSource"]);
 
 			it.drawDoors(m_binder, m_shaders["shader"]);
+
+			it.drawEnemies(m_binder, m_shaders["billboard"]);
 		}
+		
+		/*
 		m_shaders["billboard"]->use();
 		m_shaders["billboard"]->setMat4fv("model", m_enemy.returnTransMat());
 		m_shaders["billboard"]->setMat4fv("view", m_player->returnView());
@@ -482,19 +458,18 @@ void MainGame::gameLoop(){
 		m_shaders["billboard"]->set3f("viewPos", m_player->getPos());
 		m_shaders["billboard"]->set3f("lightPos", m_light.getPos());
 		m_shaders["billboard"]->set2f("UV", m_enemy.getTexCoord());
-		m_shaders["billboard"]->set2f("offset", m_enemy.getOffset());
+		m_shaders["billboard"]->set2f("offset", m_enemy.getOffset());*/
 	//	m_shaders["billboard"]->set1i("arrSize", 1);
 
-		m_enemy.draw(m_binder);
-		m_enemy.update();
 		/*********************************/
 		glfwPollEvents();
 		controlManager();
 	//	m_player->setBack(m_collisionManager.checkCollision(m_player->getMinAABB(), m_player->getMaxAABB(), m_square.getMinAABB(), m_square.getMaxAABB()));
+		m_player->gravity();
 		m_rooms.back().wallColider();
 		m_player->update(m_inputManager.getCordsOffset());
 		m_inputManager.update();
-		//printf_s("%d\n", m_collisionManager.checkCollision(m_player->getPos(), m_square.getMinAABB(), m_square.getMaxAABB()));
+	//	printf_s("%f %f %f    %f %f %f\n", m_player->getPos().x, m_player->getPos().y, m_player->getPos().z, m_enemy.getPos().x, m_enemy.getPos().y, m_enemy.getPos().z);
 
 		glfwSwapBuffers(m_ignition.getWindow());
 		DEngine::endTime = glfwGetTime();

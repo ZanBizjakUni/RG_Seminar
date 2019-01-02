@@ -11,6 +11,28 @@ Entity::Entity(std::string bindName, glm::vec4 p) {
 	init(p);
 }
 
+Entity::Entity(std::ifstream & file) {
+	int tmp;
+	file.read((char*)&m_radius, sizeof(float));
+	file.read((char*)&tmp, sizeof(int));
+	m_bind.resize(tmp);
+	file.read((char*)m_bind.data(), tmp);
+	file.read((char*)glm::value_ptr(m_pos), 4 * sizeof(float));
+	file.read((char*)glm::value_ptr(m_minAABB), 4 * sizeof(float));
+	file.read((char*)glm::value_ptr(m_maxAABB), 4 * sizeof(float));
+	file.read((char*)&tmp,sizeof(int));
+	for (int i = 0; i < tmp; i++) {
+		glm::vec4 a;
+		file.read((char*)glm::value_ptr(a),4 * sizeof(float));
+		m_corners.emplace_back(a);
+	}
+	file.read((char*)glm::value_ptr(m_model), 16 * sizeof(float));
+	file.read((char*)glm::value_ptr(m_normalModel), 9 * sizeof(float));
+	file.read((char*)&m_textureless, sizeof(bool));
+	file.read((char*)&m_selected, sizeof(bool));
+	file.read((char*)glm::value_ptr(m_color), 3 * sizeof(float));
+}
+
 
 
 Entity::~Entity() {}
@@ -44,6 +66,16 @@ void Entity::init(glm::vec4 p) {
 		m_corners.emplace_back(glm::vec4(p.x + m_radius, p.y + m_radius, p.z + m_radius, 1.0f));
 		m_corners.emplace_back(glm::vec4(p.x + m_radius, p.y + m_radius, p.z - m_radius, 1.0f));
 		m_corners.emplace_back(glm::vec4(p.x - m_radius, p.y + m_radius, p.z - m_radius, 1.0f));
+	}
+	else if (m_bind == "skeleton") {
+		m_corners.emplace_back(glm::vec4(m_pos.x - 0.1f, m_pos.y + 0.1f, m_pos.z + 0.1f, 1.0f));
+		m_corners.emplace_back(glm::vec4(m_pos.x + 0.1f, m_pos.y + 0.1f, m_pos.z + 0.1f, 1.0f));
+		m_corners.emplace_back(glm::vec4(m_pos.x + 0.1f, m_pos.y + 0.1f, m_pos.z - 0.1f, 1.0f));
+		m_corners.emplace_back(glm::vec4(m_pos.x - 0.1f, m_pos.y + 0.1f, m_pos.z - 0.1f, 1.0f));
+		m_corners.emplace_back(glm::vec4(m_pos.x - 0.1f, m_pos.y - 0.5f, m_pos.z + 0.1f, 1.0f));
+		m_corners.emplace_back(glm::vec4(m_pos.x + 0.1f, m_pos.y - 0.5f, m_pos.z + 0.1f, 1.0f));
+		m_corners.emplace_back(glm::vec4(m_pos.x + 0.1f, m_pos.y - 0.5f, m_pos.z - 0.1f, 1.0f));
+		m_corners.emplace_back(glm::vec4(m_pos.x - 0.1f, m_pos.y - 0.5f, m_pos.z - 0.1f, 1.0f));
 	}
 	m_model = glm::translate(m_model, glm::vec3(p.x, p.y, p.z));
 	m_normalModel = glm::mat3(glm::transpose(glm::inverse(m_model)));
@@ -162,4 +194,26 @@ void Entity::select() {
 
 void Entity::unselect() {
 	m_selected = false;
+}
+
+void Entity::writeToFile(std::ofstream & file) {
+	int tmp;
+	file.write((char*)&m_radius, sizeof(float));
+	tmp = m_bind.size();
+	file.write((char*)&tmp, sizeof(int));
+	file.write((char*)m_bind.c_str(), m_bind.size());
+	DEngine::FileManager::write4f(file, m_pos);
+	DEngine::FileManager::write4f(file, m_minAABB);
+	DEngine::FileManager::write4f(file, m_maxAABB);
+	tmp = (int)m_corners.size();
+	file.write((char*)&tmp, sizeof(int));
+	for (auto it : m_corners) {
+		DEngine::FileManager::write4f(file, it);
+	}
+	DEngine::FileManager::writeM4(file, m_model);
+	DEngine::FileManager::writeM3(file, m_normalModel);
+
+	file.write((char*)&m_textureless, sizeof(bool));
+	file.write((char*)&m_selected, sizeof(bool));
+	DEngine::FileManager::write3f(file, m_color);
 }

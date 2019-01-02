@@ -10,9 +10,9 @@ in vec3 FragPos;
 
 uniform sampler2D texture1;
 
-uniform vec3 lightColor[1];
+uniform vec3 lightColor[32];
 uniform vec3 viewPos;
-uniform vec3[5] lightPos;
+uniform vec3 lightPos[32];
 uniform int selected;
 uniform vec2 UV;
 uniform vec2 offset;
@@ -26,8 +26,8 @@ void main(){
       float specularStr = 0.5f;
       float dist;
       vec4 result = vec4(0.0f, 0.0f, 0.0f, 0.0f);
-      for(int i = 0; i < 5; i++){
-            vec3 currentLight = lightColor[0];
+      for(int i = 0; i < 32; i++){
+            vec3 currentLight = lightColor[i];
             dist = max( 1 - (distance(FragPos, lightPos[i]) / lightRad) , 0.0);
             
             vec3 lightDir = normalize(lightPos[i] - FragPos);
@@ -45,10 +45,11 @@ void main(){
       diffSpec = vec3(min(diffSpec.x, 1.0f), min(diffSpec.y, 1.0f), min(diffSpec.z, 1.0f) );
       result = vec4((ambient + (diffSpec)), 1.0f) * texture(texture1, vec2(TexCoord.x * UV.x, TexCoord.y * UV.y)) * vec4(1.0, 1.0, 1.0, 0.0f);
 
+      result = texture(texture1, vec2(TexCoord.x + (UV.x * offset.x), TexCoord.y + (UV.y * offset.y)));
       if(selected == 1){
             result += vec4(0.3f, 0.0f, 0.0f, 0.0f);
       }
-      FragColor = texture(texture1, vec2(TexCoord.x + (UV.x * offset.x), TexCoord.y + (UV.y * offset.y)));
+      FragColor = result;
 
 }
 

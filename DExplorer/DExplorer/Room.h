@@ -9,11 +9,11 @@
 #include "Wall.h"
 #include "Player.h"
 #include "Door.h"
-
+#include "Enemy.h"
 
 enum class Move {UP, DOWN, LEFT, RIGHT, FORWARD, BACKWARD};
 
-enum class SelType { WALLS, LIGHTS, DOORS };
+enum class SelType { WALLS, LIGHTS, DOORS, ENEMY };
 
 struct Light {
 	std::vector<Entity> lights;
@@ -25,18 +25,22 @@ struct Light {
 class Room {
 public:
 	Room();
+	Room(std::ifstream& file, Player* p);
 	Room(glm::vec3 pos, Player* plyr);
 	~Room();
 
 	void addWall(WallType ort);
 	void addLight();
 	void addDoor();
+	void addEnemy();
 	void drawWalls(DEngine::Binder binder, DEngine::ShadersComp* shdr);
 	void drawLights(DEngine::Binder binder, DEngine::ShadersComp* shdr);
 	void drawDoors(DEngine::Binder binder, DEngine::ShadersComp* shdr);
+	void drawEnemies(DEngine::Binder binder, DEngine::ShadersComp* shdr);
 	void selectFirstWall();
 	void selectFirstLight();
 	void selectFirstDoor();
+	void selectFistEnemy();
 	void moveSelected(Move mv);
 	void selectNext();
 	void selectPrev();
@@ -54,4 +58,5 @@ private:
 	int m_selID;
 	DEngine::CollisionManager m_collisionManager;
 	SelType m_stype;
+	std::vector<Enemy> m_enemies;
 };

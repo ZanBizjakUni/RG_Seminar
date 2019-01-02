@@ -8,9 +8,9 @@
 #include <iostream>
 
 int main() {
-	//sizeof(m_binders[binderName].vertices[0]) * m_binders[binderName].vertices.capacity()
-
+	printf_s("%d\n", sizeof(int));
 	MainGame game = MainGame();
+
 	game.start();
 	glfwTerminate();
 }

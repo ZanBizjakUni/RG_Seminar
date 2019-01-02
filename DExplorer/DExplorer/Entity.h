@@ -3,6 +3,7 @@
 #include <vector>
 #include <array>
 #include <algorithm>
+#include <fstream>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -10,12 +11,14 @@
 
 #include <Binder.h>
 #include <DProps.h>
+#include <FileManager.h>
 
 
 class Entity {
 public:
 	Entity();
 	Entity(std::string bindName, glm::vec4 p);
+	Entity(std::ifstream& file);
 	~Entity();
 
 	void setRootEntity();
@@ -42,6 +45,7 @@ public:
 	glm::vec3 getMaxAABB() { return m_maxAABB; }
 	glm::vec3 getTransformedMinAABB() { return m_model * m_minAABB; }
 	glm::vec3 getTransformedMaxAABB() { return m_model * m_maxAABB; }
+	void writeToFile(std::ofstream& file);
 protected:
 	float m_radius;
 	std::string m_bind;

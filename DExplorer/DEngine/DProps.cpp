@@ -27,5 +27,6 @@ namespace DEngine {
 	double beginTime = 0;
 	double endTime = 0;
 	double deltaTime = 0;
+	float gravity = 0.1f;
 
 }

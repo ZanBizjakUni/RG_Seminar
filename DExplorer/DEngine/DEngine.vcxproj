@@ -157,6 +157,7 @@
     <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="DProps.h" />
     <ClInclude Include="ErrorMsg.h" />
+    <ClInclude Include="FileManager.h" />
     <ClInclude Include="Ignition.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="ShadersComp.h" />
@@ -169,6 +170,7 @@
     <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="DProps.cpp" />
     <ClCompile Include="ErrorMsg.cpp" />
+    <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="Ignition.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="ShadersComp.cpp" />

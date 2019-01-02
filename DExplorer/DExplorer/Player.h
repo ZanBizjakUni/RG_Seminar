@@ -18,6 +18,7 @@ public:
 	glm::vec3 getLookingAt() { return m_pos + m_front; }
 	glm::vec3 getMinAABB() { return m_minAABB; }
 	glm::vec3 getMaxAABB() { return m_maxAABB; }
+	void gravity();
 private:
 	double m_move;
 	glm::vec3 m_prevPos;
