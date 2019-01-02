@@ -465,8 +465,8 @@ void MainGame::gameLoop(){
 		glfwPollEvents();
 		controlManager();
 	//	m_player->setBack(m_collisionManager.checkCollision(m_player->getMinAABB(), m_player->getMaxAABB(), m_square.getMinAABB(), m_square.getMaxAABB()));
-		m_player->gravity();
 		m_rooms.back().wallColider();
+		m_player->gravity();
 		m_player->update(m_inputManager.getCordsOffset());
 		m_inputManager.update();
 	//	printf_s("%f %f %f    %f %f %f\n", m_player->getPos().x, m_player->getPos().y, m_player->getPos().z, m_enemy.getPos().x, m_enemy.getPos().y, m_enemy.getPos().z);
