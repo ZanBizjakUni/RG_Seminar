@@ -35,7 +35,7 @@ public:
 	bool isTextureless() { return m_textureless; }
 	void setChildren(Entity* child);
 	void setRadius(int r);
-	int getRadius() { return m_radius; }
+	float getRadius() { return m_radius; }
 	std::string getBind() { return m_bind; }
 	void translateByParent(glm::mat4 parentMat);
 	bool isSeleced() { return m_selected; }

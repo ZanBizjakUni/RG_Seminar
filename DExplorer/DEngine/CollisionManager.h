@@ -8,7 +8,9 @@ namespace DEngine {
 		CollisionManager();
 		~CollisionManager();
 		int checkCollision(glm::vec3 aMinAABB, glm::vec3 aMaxAABB, glm::vec3 bMinAABB, glm::vec3 bMaxAABB);
-		bool pointCollision(glm::vec3 p, glm::vec3 minAABB, glm::vec3 maxAABB);
+		float pointCollision(glm::vec3 p, glm::vec3 minAABB, glm::vec3 maxAABB);
+		bool TwoDCollision(glm::vec3 p, glm::vec2 minAABB, glm::vec2 maxAABB);
+		bool sphereVsphere(glm::vec3 a, glm::vec3 b, float radA, float radB);
 	};
 
 }

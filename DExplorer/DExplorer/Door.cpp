@@ -4,11 +4,11 @@
 
 Door::Door() {}
 
-Door::Door(std::ifstream & file): TexturedEntity(file) {
+Door::Door(std::ifstream & file): Wall(file) {
 	file.read((char*)&m_isOpened, sizeof(bool));
 }
 
-Door::Door(std::string bindName, glm::vec4 p): TexturedEntity(bindName, p) {
+Door::Door(std::string bindName, glm::vec4 p): Wall(bindName, p) {
 	m_isOpened = false;
 }
 
@@ -31,6 +31,6 @@ void Door::openClose() {
 }
 
 void Door::writeToFile(std::ofstream & file) {
-	TexturedEntity::writeToFile(file);
+	Wall::writeToFile(file);
 	file.write((char*)&m_isOpened, sizeof(bool));
 }

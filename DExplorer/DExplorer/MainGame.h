@@ -40,6 +40,7 @@ private:
 	static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 	static void keyCallback(GLFWwindow * window, int key, int scancode, int action, int mode);
 	static void mouseCallback(GLFWwindow* window, double xpos, double ypos);
+	static void mouseButtonCallback(GLFWwindow * window, int button, int action, int mods);
 	//variables
 	DEngine::Ignition m_ignition;
 	DEngine::InputManager m_inputManager;
@@ -63,6 +64,7 @@ private:
 	Enemy m_enemy;
 	Door m_door; 
 	Wall m_wall;
+	int m_currRoom;
 
 };
 

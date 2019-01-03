@@ -47,6 +47,13 @@ public:
 	void rotateSelected();
 	void delSelected();
 	void wallColider();
+	void checkDoors();
+	void checkEnemies(); 
+	void checkBox();
+	void unselectAll();
+	glm::vec3 getMinPos() { return minPos; }
+	glm::vec3 getMaxPos() { return maxPos; }
+	glm::vec3 getLastDoorPos() { return m_doors.back().getPos(); }
 	void writeToFile(std::ofstream& file);
 private:
 	std::vector<Wall> m_walls;
@@ -59,4 +66,6 @@ private:
 	DEngine::CollisionManager m_collisionManager;
 	SelType m_stype;
 	std::vector<Enemy> m_enemies;
+	glm::vec3 minPos;
+	glm::vec3 maxPos;
 };

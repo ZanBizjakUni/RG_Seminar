@@ -41,6 +41,8 @@ Room::Room(std::ifstream & file, Player * p) {
 	for (int i = 0; i < tmp; i++) {
 		m_enemies.emplace_back(Enemy(file));
 	}
+	file.read((char*)glm::value_ptr(minPos), 3 * sizeof(float));
+	file.read((char*)glm::value_ptr(maxPos), 3 * sizeof(float));
 
 
 }
@@ -95,6 +97,8 @@ void Room::addWall(WallType ort) {
 	m_stype = SelType::WALLS;
 	m_selID = m_walls.size() - 1;
 	m_walls[m_selID].select();
+	checkBox();
+
 
 }
 
@@ -144,6 +148,8 @@ void Room::addDoor() {
 		m_doors.emplace_back(Door("square", glm::vec4(m_pos, 1.0f)));
 	}
 	m_doors.back().setTexBind("textures/door.png");
+	m_doors.back().setType(WallType::WALL);
+
 	for (auto& it : m_walls) {
 		it.unselect();
 	}
@@ -469,7 +475,12 @@ void Room::moveSelected(Move mv) {
 
 	if (m_stype == SelType::WALLS) {
 		m_walls[m_selID].setOrientation(m_walls[m_selID].getOrientation());
+		checkBox();
 	}
+	if (m_stype == SelType::DOORS) {
+		m_doors[m_selID].setOrientation(m_doors[m_selID].getOrientation());
+	}
+	
 
 }
 
@@ -561,10 +572,25 @@ void Room::rotateSelected() {
 			break;
 
 		}
+		checkBox();
+
 	}
 	else if (m_stype == SelType::DOORS) {
 		m_doors[m_selID].rotate(90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-
+		switch (m_doors[m_selID].getOrientation()) {
+		case Orientation::NORTH:
+			m_doors[m_selID].setOrientation(Orientation::WEST);
+			break;
+		case Orientation::SOUTH:
+			m_doors[m_selID].setOrientation(Orientation::EAST);
+			break;
+		case Orientation::EAST:
+			m_doors[m_selID].setOrientation(Orientation::NORTH);
+			break;
+		case Orientation::WEST:
+			m_doors[m_selID].setOrientation(Orientation::SOUTH);
+			break;
+		}
 	}
 }
 
@@ -615,10 +641,88 @@ void Room::delSelected() {
 }
 
 void Room::wallColider() {
-	for (auto&it : m_walls) {
-		m_plyr->setBack(m_collisionManager.checkCollision(m_plyr->getMinAABB(), m_plyr->getMaxAABB(), it.getMinAABB(), it.getMaxAABB()));
+	if (m_plyr->getState() == PState::PLAY) {
+		int cs;
+		m_plyr->setPrevColState();
+		m_plyr->setColState(-1);
+		for (auto&it : m_walls) {
+			cs = m_collisionManager.checkCollision(m_plyr->getMinAABB(), m_plyr->getMaxAABB(), it.getMinAABB(), it.getMaxAABB());
+			if (cs != -1) {
+				m_plyr->setColState(cs);
+			}
+			m_plyr->setBack(cs);
+			if (it.getType() == WallType::FLOOR) {
+				float d = m_collisionManager.pointCollision(m_plyr->getSphere(), it.getMinAABB(), it.getMaxAABB());
+				//	printf_s("d: %f\r", d);
+				if (d < 0.22f) {
+					d = 0.22f - d;
+					m_plyr->moveUp(d);
+					m_plyr->setColState(2);
+				}
+			}
+		}
+	
+		for (auto& it : m_enemies) {
+
+			it.update(m_plyr->getPos());
+		}
+		
+	}
+}
+
+void Room::checkDoors() {
+	for (auto& it : m_doors) {
+		if (m_collisionManager.pointCollision(m_plyr->getLookingAt(), it.getMinAABB(), it.getMaxAABB()) < 0.2f) {
+			it.openClose();
+		}
+	}
+}
+
+void Room::checkEnemies() {
+	for (auto& it : m_enemies) {
+		if (m_collisionManager.sphereVsphere(m_plyr->getLookingAt(), it.getPos(), 0.1, 0.4)) {
+			it.die();
+		}
+	}
+}
+
+void Room::checkBox() {
+	glm::vec3 tmpMin = m_walls[m_selID].getMinAABB();
+	glm::vec3 tmpMax = m_walls[m_selID].getMaxAABB();
+	if (tmpMin.x < minPos.x) {
+		minPos.x = tmpMin.x;
+	}
+	if (tmpMin.y < minPos.y) {
+		minPos.y = tmpMin.y;
+	}
+	if (tmpMin.z < minPos.z) {
+		minPos.z = tmpMin.z;
+	}
+	if (tmpMax.x > maxPos.x) {
+		maxPos.x = tmpMax.x;
+	}
+	if (tmpMax.y > maxPos.y) {
+		maxPos.y = tmpMax.y;
+	}
+	if (tmpMax.z > maxPos.z) {
+		maxPos.z = tmpMax.z;
 	}
 
+}
+
+void Room::unselectAll() {
+	for (auto& it : m_walls) {
+		it.unselect();
+	}
+	for (auto& it : m_light.lights) {
+		it.unselect();
+	}
+	for (auto& it : m_doors) {
+		it.unselect();
+	}
+	for (auto& it : m_enemies) {
+		it.unselect();
+	}
 }
 
 void Room::writeToFile(std::ofstream & file) {
@@ -663,5 +767,7 @@ void Room::writeToFile(std::ofstream & file) {
 	for (auto& it : m_enemies) {
 		it.writeToFile(file);
 	}
+	DEngine::FileManager::write3f(file, minPos);
+	DEngine::FileManager::write3f(file, maxPos);
 }
 

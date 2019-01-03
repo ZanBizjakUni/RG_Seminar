@@ -11,7 +11,7 @@ namespace DEngine {
 	Camera::~Camera() {}
 
 	void Camera::init() {
-		m_pos = glm::vec3(0.0f, 0.50f, 3.0f);
+		m_pos = glm::vec3(0.0f, 0.75f, 3.0f);
 		m_target = glm::vec3(0.0f, 0.0f, 0.0f);
 		m_dir = glm::normalize(m_pos - m_target);
 

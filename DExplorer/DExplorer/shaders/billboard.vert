@@ -17,9 +17,8 @@ void main()
 {
     vec3 cameraRight = vec3(view[0][0], view[1][0], view[2][0]);
     vec3 cameraUp = vec3(view[0][1], view[1][1], view[2][1]);
-    vec3 pos = worldSpace+ cameraRight * aPos.x + cameraUp * aPos.y;
-    vec4 a = model * vec4(aPos,1.0f);
-    gl_Position = projection * view * vec4(pos.x, a.y, pos.z, 1.0);
+    vec3 pos = worldSpace+ cameraRight * aPos.x + vec3(0.0, 1.0f, 0.0) * aPos.y;
+    gl_Position = projection * view * vec4(pos.x, pos.y, pos.z, 1.0);
     TexCoord = aTexCoord;
     Normal = normModel * aNormal; 
     FragPos = vec3(model * vec4(pos, 1.0));

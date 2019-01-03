@@ -41,7 +41,7 @@ namespace DEngine {
 		return -1;
 	}
 
-	bool CollisionManager::pointCollision(glm::vec3 p, glm::vec3 minAABB, glm::vec3 maxAABB) {
+	float CollisionManager::pointCollision(glm::vec3 p, glm::vec3 minAABB, glm::vec3 maxAABB) {
 		/*if (p.x > minAABB.x && p.x < maxAABB.x) {
 			if (p.y > minAABB.y && p.y < maxAABB.y) {
 				if (p.z > minAABB.z && p.z < maxAABB.z) {
@@ -56,8 +56,23 @@ namespace DEngine {
 		glm::vec3 d = glm::vec3(x, y, z);
 		float dist = glm::distance(d, p);
 
-		return dist < 0.2f;
+		return dist;
 		
 	}
+
+bool CollisionManager::TwoDCollision(glm::vec3 p, glm::vec2 minAABB, glm::vec2 maxAABB) {
+	if (p.x > minAABB.x && p.x < maxAABB.x) {
+		if (p.z > minAABB.y && p.z < maxAABB.y) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool CollisionManager::sphereVsphere(glm::vec3 a, glm::vec3 b, float radA, float radB) {
+	float dist = glm::distance(a, b);
+	return dist < (radA + radB);
+
+}
 
 }

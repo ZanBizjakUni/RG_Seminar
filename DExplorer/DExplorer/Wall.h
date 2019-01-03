@@ -19,7 +19,7 @@ public:
 	WallType getType() { return m_type; }
 	Orientation getOrientation() { return m_orientation; }
 	void writeToFile(std::ofstream& file);
-private:
+protected:
 	Orientation m_orientation;
 	WallType m_type;
 };

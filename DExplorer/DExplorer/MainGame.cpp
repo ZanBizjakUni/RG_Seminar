@@ -102,6 +102,8 @@ void MainGame::setCallbacks() {
 	glfwSetKeyCallback(m_ignition.getWindow(), keyCallback);
 
 	glfwSetCursorPosCallback(m_ignition.getWindow(), mouseCallback);
+
+	glfwSetMouseButtonCallback(m_ignition.getWindow(), mouseButtonCallback);
 }
 
 ///controlManager()
@@ -141,81 +143,112 @@ void MainGame::controlManager() {
 	else {
 		m_player->unToggleSprint();
 	}
-	if (m_inputManager.isKeyPressed(GLFW_KEY_F1)) {
-		m_rooms.back().selectFirstWall();
+	if (m_inputManager.isKeyPressed(GLFW_KEY_SPACE)) {
+		m_player->jump();
 	}
-	if (m_inputManager.isKeyPressed(GLFW_KEY_N)) {
-		m_rooms.back().addWall(WallType::FLOOR);
-	}
-	if (m_inputManager.isKeyPressed(GLFW_KEY_M)) {
-		m_rooms.back().addWall(WallType::WALL);
-	}
-	if (m_inputManager.isKeyPressed(GLFW_KEY_R)) {
-		m_rooms.back().rotateSelected();
-	}
-	if (m_inputManager.isKeyPressed(GLFW_KEY_L)) {
-		m_rooms.back().addLight();
-	}
-	if (m_inputManager.isKeyPressed(GLFW_KEY_B)) {
-		m_rooms.back().addDoor();
-	}
-	if (m_inputManager.isKeyPressed(GLFW_KEY_P)) {
-		m_rooms.back().addEnemy();
-	}
-
 	if (m_inputManager.isKeyPressed(GLFW_KEY_E)) {
-		if (m_collisionManager.pointCollision(m_player->getLookingAt(), m_door.getMinAABB(), m_door.getMaxAABB())) {
-			m_door.openClose();
+		if (m_player->getState() == PState::PLAY) {
+			for (int i = 0; i < m_rooms.size(); i++) {
+				m_rooms[i].checkDoors();
+			}
 		}
 	}
-
-
-
-	if (m_inputManager.isKeyPressed(GLFW_KEY_INSERT)) {
-		m_rooms.back().selectNext();
+	if (m_inputManager.isKeyPressed(GLFW_MOUSE_BUTTON_LEFT)) {
+		if (m_player->getState() == PState::PLAY) {
+			for (int i = 0; i < m_rooms.size(); i++) {
+				m_rooms[i].checkEnemies();
+			}
+		}
 	}
-	if (m_inputManager.isKeyPressed(GLFW_KEY_HOME)) {
-		m_rooms.back().selectPrev();
+	if (m_inputManager.isKeyPressed(GLFW_KEY_F10)) {
+		m_player->setState(PState::CREATE);
 	}
-	if (m_inputManager.isKeyPressed(GLFW_KEY_DELETE)) {
-		m_rooms.back().delSelected();
-	}
-	if (m_inputManager.isKeyPressed(GLFW_KEY_F5)) {
-		std::ofstream file("test.lvl", std::ios::out | std::ios::binary);
-		printf_s("Saving level...\n");
-		m_rooms.back().writeToFile(file);
-		printf_s("Save complete!\n");
-		file.close();
+	if (m_inputManager.isKeyPressed(GLFW_KEY_F9)) {
+		m_player->setState(PState::PLAY);
 	}
 
+	if (m_player->getState() == PState::CREATE) {
+		if (m_inputManager.isKeyPressed(GLFW_KEY_1)) {
+			m_rooms.back().selectFirstWall();
+		}
 
-	if (m_inputManager.isKeyPressed(GLFW_KEY_U)) {
-		m_door.translate(glm::vec3(1.0f, 0.0f, 0.0f));
-	}
-	if (m_inputManager.isKeyPressed(GLFW_KEY_I)) {
-		m_door.translate(glm::vec3(0.0f, 0.0f, -1.0f));
-	}
-
-	if (m_inputManager.isKeyPressed(GLFW_KEY_LEFT)) {
-		m_rooms.back().moveSelected(Move::LEFT);
-	}
-	if (m_inputManager.isKeyPressed(GLFW_KEY_RIGHT)) {
-		m_rooms.back().moveSelected(Move::RIGHT);
-	}
-	if (m_inputManager.isKeyPressed(GLFW_KEY_UP)) {
-		m_rooms.back().moveSelected(Move::FORWARD);
-	}
-	if (m_inputManager.isKeyPressed(GLFW_KEY_DOWN)) {
-		m_rooms.back().moveSelected(Move::BACKWARD);
-	}
-	if (m_inputManager.isKeyPressed(GLFW_KEY_PAGE_UP)) {
-		m_rooms.back().moveSelected(Move::UP);
-	}
-	if (m_inputManager.isKeyPressed(GLFW_KEY_PAGE_DOWN)) {
-		m_rooms.back().moveSelected(Move::DOWN);
-	}
+		if (m_inputManager.isKeyPressed(GLFW_KEY_2)) {
+			m_rooms.back().selectFirstLight();
+		}
+		if (m_inputManager.isKeyPressed(GLFW_KEY_3)) {
+			m_rooms.back().selectFirstDoor();
+		}
+		if (m_inputManager.isKeyPressed(GLFW_KEY_4)) {
+			m_rooms.back().selectFistEnemy();
+		}
+		if (m_inputManager.isKeyPressed(GLFW_KEY_5)) {
+			m_rooms.back().unselectAll();
+		}
+		if (m_inputManager.isKeyPressed(GLFW_KEY_0)) {
+			m_rooms.emplace_back(Room(m_rooms.back().getLastDoorPos(), m_player));
+		}
 
 
+		if (m_inputManager.isKeyPressed(GLFW_KEY_N)) {
+			m_rooms.back().addWall(WallType::FLOOR);
+		}
+		if (m_inputManager.isKeyPressed(GLFW_KEY_M)) {
+			m_rooms.back().addWall(WallType::WALL);
+		}
+		if (m_inputManager.isKeyPressed(GLFW_KEY_R)) {
+			m_rooms.back().rotateSelected();
+		}
+		if (m_inputManager.isKeyPressed(GLFW_KEY_L)) {
+			m_rooms.back().addLight();
+		}
+		if (m_inputManager.isKeyPressed(GLFW_KEY_B)) {
+			m_rooms.back().addDoor();
+		}
+		if (m_inputManager.isKeyPressed(GLFW_KEY_P)) {
+			m_rooms.back().addEnemy();
+		}
+
+		if (m_inputManager.isKeyPressed(GLFW_KEY_INSERT)) {
+			m_rooms.back().selectNext();
+		}
+		if (m_inputManager.isKeyPressed(GLFW_KEY_HOME)) {
+			m_rooms.back().selectPrev();
+		}
+		if (m_inputManager.isKeyPressed(GLFW_KEY_DELETE)) {
+			m_rooms.back().delSelected();
+		}
+		if (m_inputManager.isKeyPressed(GLFW_KEY_F5)) {
+			std::ofstream file("test.lvl", std::ios::out | std::ios::binary | std::ios::trunc);
+			printf_s("Saving level...\n");
+			int tmp;
+			tmp = m_rooms.size();
+			file.write((char*)&tmp, sizeof(int));
+			for (auto& it : m_rooms) {
+				it.writeToFile(file);
+			}
+			printf_s("Save complete!\n");
+			file.close();
+		}
+		if (m_inputManager.isKeyPressed(GLFW_KEY_LEFT)) {
+			m_rooms.back().moveSelected(Move::LEFT);
+		}
+		if (m_inputManager.isKeyPressed(GLFW_KEY_RIGHT)) {
+			m_rooms.back().moveSelected(Move::RIGHT);
+		}
+		if (m_inputManager.isKeyPressed(GLFW_KEY_UP)) {
+			m_rooms.back().moveSelected(Move::FORWARD);
+		}
+		if (m_inputManager.isKeyPressed(GLFW_KEY_DOWN)) {
+			m_rooms.back().moveSelected(Move::BACKWARD);
+		}
+		if (m_inputManager.isKeyPressed(GLFW_KEY_PAGE_UP)) {
+			m_rooms.back().moveSelected(Move::UP);
+		}
+		if (m_inputManager.isKeyPressed(GLFW_KEY_PAGE_DOWN)) {
+			m_rooms.back().moveSelected(Move::DOWN);
+		}
+
+	}
 
 
 }
@@ -358,7 +391,11 @@ void MainGame::enviromentInit() {
 
 	//m_rooms.emplace_back(Room(glm::vec3(0.0f, 0.0f, 0.0f), m_player));
 	std::ifstream file("test.lvl");
-	m_rooms.emplace_back(Room(file, m_player));
+	int tmp;
+	file.read((char*)&tmp, sizeof(int));
+	for (int i = 0; i < tmp; i++) {
+		m_rooms.emplace_back(Room(file, m_player));
+	}
 	file.close();
 	
 	//m_rooms.back().addWall(Orientation::FLOOR);
@@ -375,6 +412,12 @@ void MainGame::enviromentInit() {
 //	m_shader->unuse();
 	m_shaders["shader"]->unuse();
 	//m_player->init();
+
+	printf_s("EDIT MODE CONTROLS:\n");
+	printf_s("Spawn Wall: M\nSpawn Floor\nSpawn Door: B\nSpawn Enemy: P\nSpawn lightsource(32 max): L\n");
+	printf_s("Use arrow keys to move the selected object around(red shade)\n PgUp and PgDown for moving objects up and down\n");
+	printf_s("Home: select next object of the selected type\nInsert: Select previous object of the selected type\n");
+	printf_s("1: Select the first wall/floor object\n2: Select first light\n3: select first door\n4: Select first enemy\n");
 }
 
 ///gameLoop()
@@ -391,86 +434,53 @@ void MainGame::gameLoop(){
 		DEngine::beginTime = glfwGetTime();
 		glClear(GL_DEPTH_BUFFER_BIT);
 		glClear(GL_COLOR_BUFFER_BIT);
+		m_currRoom = -1;
+		if (m_player->getState() == PState::PLAY) {
+			for (int i = 0; i < m_rooms.size(); i++) {
+				if (m_collisionManager.checkCollision(m_player->getMinAABB(), m_player->getMaxAABB(), m_rooms[i].getMinPos(), m_rooms[i].getMaxPos()) != -1) {
+					m_currRoom = i;
+					if (m_currRoom >= 0) {
+						m_rooms[m_currRoom].drawWalls(m_binder, m_shaders["shader"]);
+						m_rooms[m_currRoom].drawLights(m_binder, m_shaders["lightSource"]);
+						m_rooms[m_currRoom].drawDoors(m_binder, m_shaders["shader"]);
+						m_rooms[m_currRoom].drawEnemies(m_binder, m_shaders["billboard"]);
+					}
+				}
+			}
+		}
+		if (m_player->getState() == PState::CREATE) {
+			for (auto &it : m_rooms) {
 
-		/*TODO: reorganise the code below*/
-		//m_square.rotate(1.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+				it.drawWalls(m_binder, m_shaders["shader"]);
 
-		/*m_lightSourceShader->use();
-		m_lightSourceShader->setMat4fv("model", m_light.returnTransMat());
-		m_lightSourceShader->setMat4fv("view", m_player->returnView());
-		m_lightSourceShader->setMat4fv("projection", m_player->returnProjection());
-		m_lightSourceShader->set3f("lightColor", m_light.getColor());*/
+				it.drawLights(m_binder, m_shaders["lightSource"]);
 
-	/*	m_shaders["lightSource"]->use();
-		m_shaders["lightSource"]->setMat4fv("model", m_light.returnTransMat());
-		m_shaders["lightSource"]->setMat4fv("view", m_player->returnView());
-		m_shaders["lightSource"]->setMat4fv("projection", m_player->returnProjection());
-		m_shaders["lightSource"]->set3f("lightColor", m_light.getColor());
+				it.drawDoors(m_binder, m_shaders["shader"]);
 
-	//	m_light.draw(m_binder);
-	
-		m_shaders["shader"]->use();
-		m_shaders["shader"]->setMat4fv("model", m_door.returnTransMat());
-		m_shaders["shader"]->setMat4fv("view", m_player->returnView());
-		m_shaders["shader"]->setMat4fv("projection", m_player->returnProjection());
-		m_shaders["shader"]->setMat3fv("normModel", m_door.getNormModel());
-		m_shaders["shader"]->set3f("lightColor", m_light.getColor());
-		m_shaders["shader"]->set3f("viewPos", m_player->getPos());
-		m_shaders["shader"]->set3f("lightPos", m_light.getPos());
-		m_shaders["shader"]->set1i("arrSize", 1);*/
-
-		/*m_shader->use();
-		m_shader->setMat4fv("model", m_square.returnTransMat());
-		m_shader->setMat4fv("view", m_player->returnView());
-		m_shader->setMat4fv("projection", m_player->returnProjection());
-		m_shader->setMat3fv("normModel", m_square.getNormModel());
-		m_shader->set3f("lightColor", m_light.getColor());
-		m_shader->set3f("viewPos", m_player->getPos());
-		m_shader->set3f("lightPos", m_light.getPos());
-		m_shader->set1i("arrSize", 1);*/
-//		m_shaders["shader"]->set3f("worldSpace", m_square.getPos());
-
-	//	m_door.draw(m_binder);
-/*
-		m_shaders["shader"]->setMat4fv("model", m_door.returnTransMat());
-		m_shaders["shader"]->setMat4fv("projection", m_player->returnProjection());
-		m_shaders["shader"]->setMat3fv("normModel", m_door.getNormModel());
-		m_door.draw(m_binder);
-		*/
-		for (auto &it : m_rooms) {
-			it.drawWalls(m_binder, m_shaders["shader"]);
-
-			it.drawLights(m_binder, m_shaders["lightSource"]);
-
-			it.drawDoors(m_binder, m_shaders["shader"]);
-
-			it.drawEnemies(m_binder, m_shaders["billboard"]);
+				it.drawEnemies(m_binder, m_shaders["billboard"]);
+			}
+		}
+		else {
+			
 		}
 		
-		/*
-		m_shaders["billboard"]->use();
-		m_shaders["billboard"]->setMat4fv("model", m_enemy.returnTransMat());
-		m_shaders["billboard"]->setMat4fv("view", m_player->returnView());
-		m_shaders["billboard"]->setMat4fv("projection", m_player->returnProjection());
-		m_shaders["billboard"]->setMat3fv("normModel", m_enemy.getNormModel());
-		m_shaders["billboard"]->set3f("worldSpace", m_enemy.getPos());
-		m_shaders["billboard"]->set3f("lightColor", m_light.getColor());
-		m_shaders["billboard"]->set3f("viewPos", m_player->getPos());
-		m_shaders["billboard"]->set3f("lightPos", m_light.getPos());
-		m_shaders["billboard"]->set2f("UV", m_enemy.getTexCoord());
-		m_shaders["billboard"]->set2f("offset", m_enemy.getOffset());*/
-	//	m_shaders["billboard"]->set1i("arrSize", 1);
 
 		/*********************************/
 		glfwPollEvents();
 		controlManager();
-	//	m_player->setBack(m_collisionManager.checkCollision(m_player->getMinAABB(), m_player->getMaxAABB(), m_square.getMinAABB(), m_square.getMaxAABB()));
-		m_rooms.back().wallColider();
 		m_player->gravity();
+		if (m_player->getState() == PState::PLAY) {
+			for (int i = 0; i < m_rooms.size(); i++) {
+				if (m_collisionManager.checkCollision(m_player->getMinAABB(), m_player->getMaxAABB(), m_rooms[i].getMinPos(), m_rooms[i].getMaxPos()) != -1) {
+					m_rooms[i].wallColider();
+				}
+			}
+		}
+		
 		m_player->update(m_inputManager.getCordsOffset());
 		m_inputManager.update();
-	//	printf_s("%f %f %f    %f %f %f\n", m_player->getPos().x, m_player->getPos().y, m_player->getPos().z, m_enemy.getPos().x, m_enemy.getPos().y, m_enemy.getPos().z);
-
+		m_player->setPrevPos();
+		printf_s("%d\r", m_collisionManager.checkCollision(m_player->getMinAABB(), m_player->getMaxAABB(), m_rooms.back().getMinPos(), m_rooms.back().getMaxPos()));
 		glfwSwapBuffers(m_ignition.getWindow());
 		DEngine::endTime = glfwGetTime();
 		DEngine::setDelta();
@@ -519,4 +529,16 @@ void MainGame::mouseCallback(GLFWwindow * window, double xpos, double ypos) {
 	DEngine::InputManager* m_inputManager = reinterpret_cast<DEngine::InputManager*>(glfwGetWindowUserPointer(window));
 	m_inputManager->setMouseCords(xpos, ypos);
 
+}
+
+void MainGame::mouseButtonCallback(GLFWwindow * window, int button, int action, int mods) {
+	DEngine::InputManager* m_inputManager = reinterpret_cast<DEngine::InputManager*>(glfwGetWindowUserPointer(window));
+
+
+	if (action == GLFW_PRESS) {
+		m_inputManager->pressKey(button);
+	}
+	if (action == GLFW_RELEASE) {
+		m_inputManager->releaseKey(button);
+	}
 }

@@ -12,10 +12,11 @@ Enemy::Enemy(std::ifstream & file): TexturedEntity(file) {
 	file.read((char*)&tmp, sizeof(int));
 	m_status = (State)tmp;
 	file.read((char*)&m_health, sizeof(float));
+	file.read((char*)&m_deathTime, sizeof(float));
 }
 Enemy::Enemy(std::string bindName, glm::vec4 p) : TexturedEntity(bindName, p) {
 	m_status = State::IDLE;
-
+	m_deathTime = 0.0f;
 }
 
 
@@ -26,21 +27,33 @@ Enemy::~Enemy() {}
 void Enemy::update(glm::vec3 playerPos) {
 	playerPos -= glm::vec3(0.0f, 0.5f, 0.0f);
 	glm::vec3 deltaPos = playerPos - glm::vec3(m_pos.x, m_pos.y, m_pos.z);
-	if (m_health <= 0) {
-		m_status = State::DEAD;
-	}
-	else if (glm::distance(playerPos, glm::vec3(m_pos)) <= 0.5f) {
-		m_status = State::ATTACK;
-	}
-	else if(glm::distance(playerPos, glm::vec3(m_pos)) <= 3.0f)
-	{
-		m_status = State::MOVING;
-	}
-	else if (glm::distance(playerPos, glm::vec3(m_pos)) >= 3.0f) {
-		m_status = State::IDLE;
+	if (m_status != State::DEAD) {
+		if (m_health <= 0) {
+			m_status = State::DEAD;
+
+		}
+		else if (glm::distance(playerPos, glm::vec3(m_pos)) <= 0.75f) {
+			m_status = State::ATTACK;
+		}
+		else if (glm::distance(playerPos, glm::vec3(m_pos)) <= 3.0f) {
+			m_status = State::MOVING;
+		}
+		else if (glm::distance(playerPos, glm::vec3(m_pos)) >= 3.0f) {
+			m_status = State::IDLE;
+		}
 	}
 	m_texCoord.y = (float)m_status;
-	m_texCoord.x = (float)((int)(glfwGetTime() * 5) % 10);
+	if (m_status == State::DEAD) {
+		if ((float)((int)((glfwGetTime() - m_deathTime) * 5)) < 9) {
+			m_texCoord.x = (float)((int)((glfwGetTime() - m_deathTime) * 5) % 10);
+		}
+		else {
+			m_texCoord.x = 9;
+		}
+	}
+	else {
+		m_texCoord.x = (float)((int)((glfwGetTime() - m_deathTime) * 5) % 10);
+	}
 	if (m_status == State::MOVING) {
 		move(deltaPos);
 	}
@@ -57,6 +70,12 @@ void Enemy::writeToFile(std::ofstream & file) {
 	tmp = (int)m_status;
 	file.write((char*)&tmp, sizeof(int));
 	file.write((char*)&m_health, sizeof(float));
+	file.write((char*)&m_deathTime, sizeof(float));
+}
+
+void Enemy::die() {
+	m_status = State::DEAD;
+	m_deathTime = glfwGetTime();
 }
 
 void Enemy::move(glm::vec3 deltaPos) {

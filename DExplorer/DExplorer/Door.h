@@ -1,6 +1,6 @@
 #pragma once
-#include "TexturedEntity.h"
-class Door :public TexturedEntity{
+#include "Wall.h"
+class Door :public Wall{
 public:
 	Door();
 	Door(std::ifstream& file);

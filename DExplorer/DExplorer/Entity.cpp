@@ -15,6 +15,7 @@ Entity::Entity(std::ifstream & file) {
 	int tmp;
 	file.read((char*)&m_radius, sizeof(float));
 	file.read((char*)&tmp, sizeof(int));
+
 	m_bind.resize(tmp);
 	file.read((char*)m_bind.data(), tmp);
 	file.read((char*)glm::value_ptr(m_pos), 4 * sizeof(float));
