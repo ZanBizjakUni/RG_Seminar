@@ -187,6 +187,12 @@ void MainGame::controlManager() {
 		if (m_inputManager.isKeyPressed(GLFW_KEY_0)) {
 			m_rooms.emplace_back(Room(m_rooms.back().getLastDoorPos(), m_player));
 		}
+		if (m_inputManager.isKeyPressed(GLFW_KEY_KP_ADD)) {
+			DEngine::precision += 0.1f;
+		}
+		if (m_inputManager.isKeyPressed(GLFW_KEY_KP_SUBTRACT)) {
+			DEngine::precision -= 0.1f;
+		}
 
 
 		if (m_inputManager.isKeyPressed(GLFW_KEY_N)) {
@@ -375,19 +381,10 @@ void MainGame::enviromentInit() {
 	m_binder.setTextureBinder("textures/wall.jpg");
 	m_binder.setTextureBinder("textures/skeleton.png");
 	m_binder.setTextureBinder("textures/door.png");
+	m_binder.setTextureBinder("textures/stonefloor.jpg");
+	m_binder.setTextureBinder("textures/stonewall.png");
 
 	/*INITIALISING OBJECTS*/
-	/*m_square = TexturedEntity("square", glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-	m_square.setTexBind("textures/awesomeface.png");
-	m_square.setTexBind("textures/wall.jpg");*/
-
-	//m_door = Door("square", glm::vec4(-1.0f, 0.0f, 0.0f, 1.0f));
-	//m_door.setTexBind("textures/door.png");
-//	std::ifstream file("test.lvl");
-	m_light = Entity("cube", glm::vec4(1.0f, 0.75f, -2.0f, 1.0f));
-	//m_light = Entity(file);
-	//file.close();
-
 
 	//m_rooms.emplace_back(Room(glm::vec3(0.0f, 0.0f, 0.0f), m_player));
 	std::ifstream file("test.lvl");
@@ -397,16 +394,9 @@ void MainGame::enviromentInit() {
 		m_rooms.emplace_back(Room(file, m_player));
 	}
 	file.close();
-	
-	//m_rooms.back().addWall(Orientation::FLOOR);
-	//m_rooms.back().addLight();
 
-	//m_shader->use();
 	m_shaders["shader"]->use();
-	/*for (int i = 0; i < m_binder.getTextureSize(); i++) {
-		//m_shader->set1i("texture" + std::to_string(i), i);
-		m_shaders["shader"]->set1i("texture" + std::to_string(i), i);
-	}*/
+
 	m_shaders["shader"]->set1i("texture" + std::to_string(1), 0);
 
 //	m_shader->unuse();
@@ -425,10 +415,7 @@ void MainGame::enviromentInit() {
 * Main game loop, loops around until said otherwise
 */	
 void MainGame::gameLoop(){
-	/*Stuff to reorganise in project ( following the tutorial )*/
 	
-	/*Stuff to reorganise ^*/
-	std::vector<glm::vec3> lightsPos;
 	
 	while (!glfwWindowShouldClose(m_ignition.getWindow())) {
 		DEngine::beginTime = glfwGetTime();
@@ -438,13 +425,11 @@ void MainGame::gameLoop(){
 		if (m_player->getState() == PState::PLAY) {
 			for (int i = 0; i < m_rooms.size(); i++) {
 				if (m_collisionManager.checkCollision(m_player->getMinAABB(), m_player->getMaxAABB(), m_rooms[i].getMinPos(), m_rooms[i].getMaxPos()) != -1) {
-					m_currRoom = i;
-					if (m_currRoom >= 0) {
-						m_rooms[m_currRoom].drawWalls(m_binder, m_shaders["shader"]);
-						m_rooms[m_currRoom].drawLights(m_binder, m_shaders["lightSource"]);
-						m_rooms[m_currRoom].drawDoors(m_binder, m_shaders["shader"]);
-						m_rooms[m_currRoom].drawEnemies(m_binder, m_shaders["billboard"]);
-					}
+					m_rooms[i].drawWalls(m_binder, m_shaders["shader"]);
+					m_rooms[i].drawLights(m_binder, m_shaders["lightSource"]);
+					m_rooms[i].drawDoors(m_binder, m_shaders["shader"]);
+					m_rooms[i].drawEnemies(m_binder, m_shaders["billboard"]);
+					
 				}
 			}
 		}
@@ -480,7 +465,7 @@ void MainGame::gameLoop(){
 		m_player->update(m_inputManager.getCordsOffset());
 		m_inputManager.update();
 		m_player->setPrevPos();
-		printf_s("%d\r", m_collisionManager.checkCollision(m_player->getMinAABB(), m_player->getMaxAABB(), m_rooms.back().getMinPos(), m_rooms.back().getMaxPos()));
+		//printf_s("%d \r", m_collisionManager.checkCollision(m_player->getMinAABB(), m_player->getMaxAABB(), m_rooms.back().getMinPos(), m_rooms.back().getMaxPos()));
 		glfwSwapBuffers(m_ignition.getWindow());
 		DEngine::endTime = glfwGetTime();
 		DEngine::setDelta();

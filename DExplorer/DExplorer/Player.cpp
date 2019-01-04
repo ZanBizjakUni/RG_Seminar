@@ -2,7 +2,7 @@
 
 
 
-Player::Player(): Camera() {
+Player::Player(): Camera(), Physics(m_pos) {
 	m_speed = 2.5f;
 	m_sprint = false;
 	m_move = 0;
@@ -11,11 +11,6 @@ Player::Player(): Camera() {
 	m_stepHeight = 50; //higher value --> smaller height
 	m_stepLen = 0.2f; //higher value --> longer step;
 	m_prevPos = m_pos;
-	m_downVelocity = 0.0f;
-	m_colState = -1;
-	m_prevColState = m_colState;
-	m_status = Status::INAIR;
-	m_bottomSphere = m_pos - glm::vec3(0.0f, 0.3f, 0.0f);
 	m_corners.emplace_back(glm::vec4(m_pos.x - 0.1f, m_pos.y + 0.1f, m_pos.z + 0.1f, 1.0f));
 	m_corners.emplace_back(glm::vec4(m_pos.x + 0.1f, m_pos.y + 0.1f, m_pos.z + 0.1f, 1.0f));
 	m_corners.emplace_back(glm::vec4(m_pos.x + 0.1f, m_pos.y + 0.1f, m_pos.z - 0.1f, 1.0f));
@@ -25,10 +20,10 @@ Player::Player(): Camera() {
 	m_corners.emplace_back(glm::vec4(m_pos.x + 0.1f, m_pos.y - 0.5f, m_pos.z - 0.1f, 1.0f));
 	m_corners.emplace_back(glm::vec4(m_pos.x - 0.1f, m_pos.y - 0.5f, m_pos.z - 0.1f, 1.0f));
 
-	m_minAABB = glm::vec3(m_pos.x - 0.1f, m_pos.y - 0.75f, m_pos.z - 0.1f);
-	m_maxAABB = glm::vec3(m_pos.x + 0.1f, m_pos.y + 0.1f, m_pos.z + 0.1f);
+	m_minAABB = glm::vec4(m_pos.x - 0.1f, m_pos.y - 0.75f, m_pos.z - 0.1f, 1.0f);
+	m_maxAABB = glm::vec4(m_pos.x + 0.1f, m_pos.y + 0.1f, m_pos.z + 0.1f, 1.0f);
 
-	m_state = PState::PLAY;
+	m_state = PState::CREATE;
 }
 
 
@@ -76,18 +71,7 @@ void Player::move(Direction d) {
 		m_bottomSphere += change;
 
 	}
-
-	m_corners[0] = (glm::vec4(m_pos.x - 0.1f, m_pos.y + 0.1f, m_pos.z + 0.1f, 1.0f));
-	m_corners[1] = (glm::vec4(m_pos.x + 0.1f, m_pos.y + 0.1f, m_pos.z + 0.1f, 1.0f));
-	m_corners[2] = (glm::vec4(m_pos.x + 0.1f, m_pos.y + 0.1f, m_pos.z - 0.1f, 1.0f));
-	m_corners[3] = (glm::vec4(m_pos.x - 0.1f, m_pos.y + 0.1f, m_pos.z - 0.1f, 1.0f));
-	m_corners[4] = (glm::vec4(m_pos.x - 0.1f, m_pos.y - 0.5f, m_pos.z + 0.1f, 1.0f));
-	m_corners[5] = (glm::vec4(m_pos.x + 0.1f, m_pos.y - 0.5f, m_pos.z + 0.1f, 1.0f));
-	m_corners[6] = (glm::vec4(m_pos.x + 0.1f, m_pos.y - 0.5f, m_pos.z - 0.1f, 1.0f));
-	m_corners[7] = (glm::vec4(m_pos.x - 0.1f, m_pos.y - 0.5f, m_pos.z - 0.1f, 1.0f));
-
-	m_minAABB = glm::vec3(m_pos.x - 0.1f, m_pos.y - 0.5f, m_pos.z - 0.1f);
-	m_maxAABB = glm::vec3(m_pos.x + 0.1f, m_pos.y + 0.5f, m_pos.z + 0.1f);
+	DEngine::CollisionManager::changeAABB(m_minAABB, m_maxAABB, m_pos);
 
 }
 
@@ -115,19 +99,8 @@ void Player::update(glm::vec2 offset) {
 	m_front.z = cos(glm::radians(m_pitch)) * sin(glm::radians(m_yaw));
 	m_front = glm::normalize(m_front);
 
-	if ((m_colState == -1 && m_prevColState == 2) || (m_colState == 2 && m_prevColState == -1)) {
-		m_status = Status::ONGROUND;
-	}
-	else if ((m_colState == 3 || m_colState == 1) && m_prevColState == -1) {
-		m_status = Status::ONWALL;
-	}
-	else if (m_colState == -1 && m_prevColState == -1) {
-		m_status = Status::INAIR;
-	}
-
-	if (m_prevColState == -1 && ( m_colState == 1 || m_colState == 3)) {
-		m_downVelocity = 0;
-	}
+	Physics::update();
+	printf_s("%d\n", m_status);
 	//printf_s("%f %f %f\r", m_pos.x, m_pos.y, m_pos.z);
 
 
@@ -138,29 +111,16 @@ void Player::update(glm::vec2 offset) {
 
 void Player::setBack(int d) {
 	if (m_state == PState::PLAY) {
-		switch (d) {
-		case 1:
-			m_pos = glm::vec3(m_prevPos.x, m_pos.y, m_pos.z);
-			break;
-		case 2:
-			m_pos = glm::vec3(m_pos.x, m_prevPos.y, m_pos.z);
-			break;
-		case 3:
-			m_pos = glm::vec3(m_pos.x, m_pos.y, m_prevPos.z);
-			break;
-		}
-		m_bottomSphere = m_pos - glm::vec3(0.0f, 0.3f, 0.0f);
+		Physics::setBack(m_pos, m_prevPos, d);
 	}
 	//m_pos = m_prevPos;
 }
-
+/*
 void Player::setColState(int c) {
 	m_colState = c;
 }
+*/
 
-void Player::setPrevColState() {
-	m_prevColState = m_colState;
-}
 
 void Player::setPrevPos() {
 	m_prevPos = m_pos;
@@ -168,51 +128,24 @@ void Player::setPrevPos() {
 
 void Player::moveUp(float d) {
 	if (m_state == PState::PLAY) {
-		m_pos.y = m_prevPos.y;
-		m_downVelocity = 0;
-		m_bottomSphere.y = m_pos.y - 0.3f;
-		m_corners[0] = (glm::vec4(m_pos.x - 0.1f, m_pos.y + 0.1f, m_pos.z + 0.1f, 1.0f));
-		m_corners[1] = (glm::vec4(m_pos.x + 0.1f, m_pos.y + 0.1f, m_pos.z + 0.1f, 1.0f));
-		m_corners[2] = (glm::vec4(m_pos.x + 0.1f, m_pos.y + 0.1f, m_pos.z - 0.1f, 1.0f));
-		m_corners[3] = (glm::vec4(m_pos.x - 0.1f, m_pos.y + 0.1f, m_pos.z - 0.1f, 1.0f));
-		m_corners[4] = (glm::vec4(m_pos.x - 0.1f, m_pos.y - 0.5f, m_pos.z + 0.1f, 1.0f));
-		m_corners[5] = (glm::vec4(m_pos.x + 0.1f, m_pos.y - 0.5f, m_pos.z + 0.1f, 1.0f));
-		m_corners[6] = (glm::vec4(m_pos.x + 0.1f, m_pos.y - 0.5f, m_pos.z - 0.1f, 1.0f));
-		m_corners[7] = (glm::vec4(m_pos.x - 0.1f, m_pos.y - 0.5f, m_pos.z - 0.1f, 1.0f));
+		Physics::moveUp(m_pos, m_prevPos, d);
+		DEngine::CollisionManager::changeAABB(m_minAABB, m_maxAABB, m_pos);
 
-		m_minAABB = glm::vec3(m_pos.x - 0.1f, m_pos.y - 0.5f, m_pos.z - 0.1f);
-		m_maxAABB = glm::vec3(m_pos.x + 0.1f, m_pos.y + 0.1f, m_pos.z + 0.1f);
 	}
 }
 
 void Player::jump() {
 	if (m_state == PState::PLAY) {
 		if (m_status == Status::ONGROUND || m_status == Status::ONWALL) {
-			m_downVelocity -= 3.0f * DEngine::deltaTime;
+			m_downVelocity -= 2.5f * DEngine::deltaTime;
 		}
 	}
 }
 
 void Player::gravity() {
 	if (m_state == PState::PLAY) {
-		if (m_colState == -1 || m_colState == 2) {
-			m_downVelocity += DEngine::gravity * DEngine::deltaTime;
-		}
-		
-
-		m_pos.y -= m_downVelocity;
-		m_bottomSphere.y -= m_downVelocity;
-		m_corners[0] = (glm::vec4(m_pos.x - 0.1f, m_pos.y + 0.1f, m_pos.z + 0.1f, 1.0f));
-		m_corners[1] = (glm::vec4(m_pos.x + 0.1f, m_pos.y + 0.1f, m_pos.z + 0.1f, 1.0f));
-		m_corners[2] = (glm::vec4(m_pos.x + 0.1f, m_pos.y + 0.1f, m_pos.z - 0.1f, 1.0f));
-		m_corners[3] = (glm::vec4(m_pos.x - 0.1f, m_pos.y + 0.1f, m_pos.z - 0.1f, 1.0f));
-		m_corners[4] = (glm::vec4(m_pos.x - 0.1f, m_pos.y - 0.5f, m_pos.z + 0.1f, 1.0f));
-		m_corners[5] = (glm::vec4(m_pos.x + 0.1f, m_pos.y - 0.5f, m_pos.z + 0.1f, 1.0f));
-		m_corners[6] = (glm::vec4(m_pos.x + 0.1f, m_pos.y - 0.5f, m_pos.z - 0.1f, 1.0f));
-		m_corners[7] = (glm::vec4(m_pos.x - 0.1f, m_pos.y - 0.5f, m_pos.z - 0.1f, 1.0f));
-
-		m_minAABB = glm::vec3(m_pos.x - 0.1f, m_pos.y - 0.5f, m_pos.z - 0.1f);
-		m_maxAABB = glm::vec3(m_pos.x + 0.1f, m_pos.y + 0.1f, m_pos.z + 0.1f);
+		Physics::gravity(m_pos);
+		DEngine::CollisionManager::changeAABB(m_minAABB, m_maxAABB, m_pos);
 	}
 }
 

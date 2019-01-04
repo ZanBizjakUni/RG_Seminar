@@ -75,4 +75,9 @@ bool CollisionManager::sphereVsphere(glm::vec3 a, glm::vec3 b, float radA, float
 
 }
 
+void CollisionManager::changeAABB(glm::vec4 & minAABB, glm::vec4 & maxAABB, glm::vec3 p) {
+	minAABB = glm::vec4(p.x - 0.1f, p.y - 0.5f, p.z - 0.1f, 1.0f);
+	maxAABB = glm::vec4(p.x + 0.1f, p.y + 0.1f, p.z + 0.1f, 1.0f);
+}
+
 }

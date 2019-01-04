@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 #include <math.h>
+#include <vector>
 namespace DEngine {
 	class CollisionManager {
 	public:
@@ -11,6 +12,7 @@ namespace DEngine {
 		float pointCollision(glm::vec3 p, glm::vec3 minAABB, glm::vec3 maxAABB);
 		bool TwoDCollision(glm::vec3 p, glm::vec2 minAABB, glm::vec2 maxAABB);
 		bool sphereVsphere(glm::vec3 a, glm::vec3 b, float radA, float radB);
+		static void changeAABB(glm::vec4& minAABB, glm::vec4& maxAABB, glm::vec3 p);
 	};
 
 }

@@ -2,14 +2,15 @@
 #include <Camera.h>
 #include <DProps.h>
 #include <vector>
+#include <Physics.h>
+#include <CollisionManager.h>
 
 enum class Direction{FORWARD, BACKWARD, LEFT, RIGHT};
 
-enum class Status{INAIR, ONGROUND, ONWALL};
 
 enum class PState{PLAY, CREATE};
 
-class Player: public DEngine::Camera {
+class Player: public DEngine::Camera, public DEngine::Physics {
 public:
 	Player();
 	~Player();
@@ -19,8 +20,6 @@ public:
 	void update(glm::vec2 offset);
 	float getYaw() { return m_yaw; }
 	void setBack(int d);
-	void setColState(int c);
-	void setPrevColState();
 	void setPrevPos();
 	void moveUp(float d);
 	void jump();
@@ -34,20 +33,16 @@ public:
 private:
 	double m_move;
 	glm::vec3 m_prevPos;
-	glm::vec3 m_bottomSphere;
 	std::vector<glm::vec4> m_corners;
-	glm::vec3 m_maxAABB;
-	glm::vec3 m_minAABB;
+	glm::vec4 m_maxAABB;
+	glm::vec4 m_minAABB;
 	float m_speed;
-	float m_downVelocity;
 	bool m_sprint;
 	float m_yaw;
 	float m_pitch;
 	float m_stepLen;
 	float m_stepHeight;
-	int m_colState;
 	int m_prevColState;
-	Status m_status;
 	PState m_state;
 	
 };

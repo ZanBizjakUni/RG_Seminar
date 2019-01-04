@@ -7,7 +7,6 @@ Entity::Entity(std::string bindName, glm::vec4 p) {
 	m_bind = bindName;
 	m_textureless = true;
 	m_color = glm::vec3(0.0f, 0.0f, 0.0f);
-
 	init(p);
 }
 

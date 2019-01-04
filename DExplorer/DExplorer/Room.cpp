@@ -44,6 +44,28 @@ Room::Room(std::ifstream & file, Player * p) {
 	file.read((char*)glm::value_ptr(minPos), 3 * sizeof(float));
 	file.read((char*)glm::value_ptr(maxPos), 3 * sizeof(float));
 
+	maxPos = m_walls[0].getMaxAABB();
+	minPos = m_walls[0].getMinAABB();
+	for (auto it : m_walls) {
+		if (it.getMinAABB().x < minPos.x) {
+			minPos.x = it.getMinAABB().x;
+		}
+		if (it.getMinAABB().y < minPos.y) {
+			minPos.y = it.getMinAABB().y;
+		}
+		if (it.getMinAABB().z < minPos.z) {
+			minPos.z = it.getMinAABB().z;
+		}
+		if (it.getMinAABB().x > maxPos.x) {
+			maxPos.x = it.getMinAABB().x;
+		}
+		if (it.getMinAABB().y > maxPos.y) {
+			maxPos.y = it.getMinAABB().y;
+		}
+		if (it.getMinAABB().z > maxPos.z) {
+			maxPos.z = it.getMinAABB().z;
+		}
+	}
 
 }
 
@@ -74,12 +96,12 @@ void Room::addWall(WallType ort) {
 	}
 	switch (ort) {
 	case WallType::FLOOR:
-		m_walls.back().setTexBind("textures/stonebricks1.jpg");
+		m_walls.back().setTexBind("textures/stonefloor.jpg");
 		m_walls.back().rotate(-90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 		m_walls.back().setType(ort);
 		break;
 	case WallType::WALL:
-		m_walls.back().setTexBind("textures/wall.jpg");
+		m_walls.back().setTexBind("textures/stonewall.png");
 		m_walls.back().setType(ort);
 		break;
 	}
@@ -357,114 +379,114 @@ void Room::moveSelected(Move mv) {
 	case Move::UP:
 		if (m_stype == SelType::WALLS) {
 			if (m_walls[m_selID].getType() == WallType::FLOOR) {
-				m_walls[m_selID].translate(glm::vec3(0.0f, 0.0f, 0.5f));
+				m_walls[m_selID].translate(glm::vec3(0.0f, 0.0f, DEngine::precision));
 			}
 			else if (m_walls[m_selID].getType() == WallType::WALL) {
-				m_walls[m_selID].translate(glm::vec3(0.0f, 0.5f, 0.0f));
+				m_walls[m_selID].translate(glm::vec3(0.0f, DEngine::precision, 0.0f));
 			}
 		}
 		else if (m_stype == SelType::LIGHTS) {
-			m_light.lights[m_selID].translate(glm::vec3(0.0f, 0.5f, 0.0f));
+			m_light.lights[m_selID].translate(glm::vec3(0.0f, DEngine::precision, 0.0f));
 		}
 		else if (m_stype == SelType::DOORS) {
-			m_doors[m_selID].translate(glm::vec3(0.0f, 0.5f, 0.0f));
+			m_doors[m_selID].translate(glm::vec3(0.0f, DEngine::precision, 0.0f));
 		}
 		else if (m_stype == SelType::ENEMY) {
-			m_enemies[m_selID].translate(glm::vec3(0.0f, 0.5f, 0.0f));
+			m_enemies[m_selID].translate(glm::vec3(0.0f, DEngine::precision, 0.0f));
 
 		}
 		break;	
 	case Move::DOWN:
 		if (m_stype == SelType::WALLS) {
 			if (m_walls[m_selID].getType() == WallType::FLOOR) {
-				m_walls[m_selID].translate(glm::vec3(0.0f, 0.0f, -0.5f));
+				m_walls[m_selID].translate(glm::vec3(0.0f, 0.0f, -DEngine::precision));
 			}
 			else if (m_walls[m_selID].getType() == WallType::WALL) {
-				m_walls[m_selID].translate(glm::vec3(0.0f, -0.5f, 0.0f));
+				m_walls[m_selID].translate(glm::vec3(0.0f, -DEngine::precision, 0.0f));
 			}
 		}
 		else if (m_stype == SelType::LIGHTS) {
-			m_light.lights[m_selID].translate(glm::vec3(0.0f, -0.5f, 0.0f));
+			m_light.lights[m_selID].translate(glm::vec3(0.0f, -DEngine::precision, 0.0f));
 
 		}
 		else if (m_stype == SelType::DOORS) {
-			m_doors[m_selID].translate(glm::vec3(0.0f, -0.5f, 0.0f));
+			m_doors[m_selID].translate(glm::vec3(0.0f, -DEngine::precision, 0.0f));
 		}
 		else if (m_stype == SelType::ENEMY) {
-			m_enemies[m_selID].translate(glm::vec3(0.0f, -0.5f, 0.0f));
+			m_enemies[m_selID].translate(glm::vec3(0.0f, -DEngine::precision, 0.0f));
 
 		}
 		break;	
 	case Move::LEFT:
 		if (m_stype == SelType::WALLS) {
-			m_walls[m_selID].translate(glm::vec3(-0.5f, 0.0f, 0.0f));
+			m_walls[m_selID].translate(glm::vec3(-DEngine::precision, 0.0f, 0.0f));
 		}
 		else if (m_stype == SelType::LIGHTS) {
-			m_light.lights[m_selID].translate(glm::vec3(-0.5f, 0.0f, 0.0f));
+			m_light.lights[m_selID].translate(glm::vec3(-DEngine::precision, 0.0f, 0.0f));
 		}
 		else if (m_stype == SelType::DOORS) {
-			m_doors[m_selID].translate(glm::vec3(-0.5f, 0.0f, 0.0f));
+			m_doors[m_selID].translate(glm::vec3(-DEngine::precision, 0.0f, 0.0f));
 
 		}
 		else if (m_stype == SelType::ENEMY) {
-			m_enemies[m_selID].translate(glm::vec3(-0.5f, 0.0f, 0.0f));
+			m_enemies[m_selID].translate(glm::vec3(-DEngine::precision, 0.0f, 0.0f));
 
 		}
 		break;
 	case Move::RIGHT:
 		if (m_stype == SelType::WALLS) {
-			m_walls[m_selID].translate(glm::vec3(0.5f, 0.0f, 0.0f));
+			m_walls[m_selID].translate(glm::vec3(DEngine::precision, 0.0f, 0.0f));
 		}
 		else if (m_stype == SelType::LIGHTS) {
-			m_light.lights[m_selID].translate(glm::vec3(0.5f, 0.0f, 0.0f));
+			m_light.lights[m_selID].translate(glm::vec3(DEngine::precision, 0.0f, 0.0f));
 
 		}
 		else if (m_stype == SelType::DOORS) {
-			m_doors[m_selID].translate(glm::vec3(0.5f, 0.0f, 0.0f));
+			m_doors[m_selID].translate(glm::vec3(DEngine::precision, 0.0f, 0.0f));
 
 		}
 		else if (m_stype == SelType::ENEMY) {
-			m_enemies[m_selID].translate(glm::vec3(0.5f, 0.0f, 0.0f));
+			m_enemies[m_selID].translate(glm::vec3(DEngine::precision, 0.0f, 0.0f));
 
 		}
 		break;
 	case Move::FORWARD:
 		if (m_stype == SelType::WALLS) {
 			if (m_walls[m_selID].getType() == WallType::FLOOR) {
-				m_walls[m_selID].translate(glm::vec3(0.0f, 0.5f, 0.0f));
+				m_walls[m_selID].translate(glm::vec3(0.0f, DEngine::precision, 0.0f));
 			}
 			else if (m_walls[m_selID].getType() == WallType::WALL) {
-				m_walls[m_selID].translate(glm::vec3(0.0f, 0.0f, -0.5f));
+				m_walls[m_selID].translate(glm::vec3(0.0f, 0.0f, -DEngine::precision));
 			}
 		}
 		else if (m_stype == SelType::LIGHTS) {
-			m_light.lights[m_selID].translate(glm::vec3(0.0f, 0.0f, -0.5f));
+			m_light.lights[m_selID].translate(glm::vec3(0.0f, 0.0f, -DEngine::precision));
 		}
 		else if (m_stype == SelType::DOORS) {
-			m_doors[m_selID].translate(glm::vec3(0.0f, 0.0f, -0.5f));
+			m_doors[m_selID].translate(glm::vec3(0.0f, 0.0f, -DEngine::precision));
 		}
 		else if (m_stype == SelType::ENEMY) {
-			m_enemies[m_selID].translate(glm::vec3(0.0f, 0.0f, -0.5f));
+			m_enemies[m_selID].translate(glm::vec3(0.0f, 0.0f, -DEngine::precision));
 
 		}
 		break;
 	case Move::BACKWARD:
 		if (m_stype == SelType::WALLS) {
 			if (m_walls[m_selID].getType() == WallType::FLOOR) {
-				m_walls[m_selID].translate(glm::vec3(0.0f, -0.5f, 0.0f));
+				m_walls[m_selID].translate(glm::vec3(0.0f, -DEngine::precision, 0.0f));
 			}
 			else if (m_walls[m_selID].getType() == WallType::WALL) {
-				m_walls[m_selID].translate(glm::vec3(0.0f, 0.0f, 0.5f));
+				m_walls[m_selID].translate(glm::vec3(0.0f, 0.0f, DEngine::precision));
 			}
 		}
 		else if (m_stype == SelType::LIGHTS) {
-			m_light.lights[m_selID].translate(glm::vec3(0.0f, 0.0f, 0.5f));
+			m_light.lights[m_selID].translate(glm::vec3(0.0f, 0.0f, DEngine::precision));
 		}
 		else if (m_stype == SelType::DOORS) {
-			m_doors[m_selID].translate(glm::vec3(0.0f, 0.0f, 0.5f));
+			m_doors[m_selID].translate(glm::vec3(0.0f, 0.0f, DEngine::precision));
 		}
 		else if (m_stype == SelType::ENEMY) {
-			m_enemies[m_selID].translate(glm::vec3(0.0f, 0.0f, 0.5f));
+			m_enemies[m_selID].translate(glm::vec3(0.0f, 0.0f, DEngine::precision));
 
 		}
 		break;	
@@ -645,21 +667,31 @@ void Room::wallColider() {
 		int cs;
 		m_plyr->setPrevColState();
 		m_plyr->setColState(-1);
+
 		for (auto&it : m_walls) {
 			cs = m_collisionManager.checkCollision(m_plyr->getMinAABB(), m_plyr->getMaxAABB(), it.getMinAABB(), it.getMaxAABB());
 			if (cs != -1) {
 				m_plyr->setColState(cs);
 			}
+			
+
 			m_plyr->setBack(cs);
 			if (it.getType() == WallType::FLOOR) {
 				float d = m_collisionManager.pointCollision(m_plyr->getSphere(), it.getMinAABB(), it.getMaxAABB());
 				//	printf_s("d: %f\r", d);
-				if (d < 0.22f) {
-					d = 0.22f - d;
+				if (d < 0.23f) {
+					d = 0.23f - d;
 					m_plyr->moveUp(d);
 					m_plyr->setColState(2);
 				}
 			}
+		}
+		for (auto&it : m_doors) {
+			cs = m_collisionManager.checkCollision(m_plyr->getMinAABB(), m_plyr->getMaxAABB(), it.getMinAABB(), it.getMaxAABB());
+			if (cs != -1) {
+				m_plyr->setColState(cs);
+			}
+			m_plyr->setBack(cs);
 		}
 	
 		for (auto& it : m_enemies) {

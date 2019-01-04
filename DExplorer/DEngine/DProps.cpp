@@ -28,5 +28,6 @@ namespace DEngine {
 	double endTime = 0;
 	double deltaTime = 0;
 	float gravity = 0.1f;
+	float precision = 0.5f;
 
 }

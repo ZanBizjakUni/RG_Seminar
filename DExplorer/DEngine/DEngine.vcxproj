@@ -74,6 +74,8 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)deps\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)deps\libs;$(LibraryPath)</LibraryPath>
+    <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -95,6 +97,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <EnablePREfast>false</EnablePREfast>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -167,6 +170,7 @@
     <ClInclude Include="FileManager.h" />
     <ClInclude Include="Ignition.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="Physics.h" />
     <ClInclude Include="ShadersComp.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="TextureLoader.h" />
@@ -180,6 +184,7 @@
     <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="Ignition.cpp" />
     <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="Physics.cpp" />
     <ClCompile Include="ShadersComp.cpp" />
     <ClCompile Include="TextureLoader.cpp" />
   </ItemGroup>

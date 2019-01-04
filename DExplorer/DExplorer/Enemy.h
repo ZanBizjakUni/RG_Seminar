@@ -1,11 +1,14 @@
 #pragma once
 
+#include <Physics.h>
+#include <CollisionManager.h>
+
 #include "TexturedEntity.h"
 
 enum class State { DEAD, ATTACK, MOVING, IDLE };
 
 
-class Enemy: public TexturedEntity{
+class Enemy: public TexturedEntity, public DEngine::Physics {
 public:
 	Enemy();
 	Enemy(std::ifstream& file);
@@ -17,12 +20,16 @@ public:
 	glm::vec2 getOffset() { return m_offset; }
 	glm::vec3 getPos() { return m_pos; }
 	void writeToFile(std::ofstream& file);
+	void setBack();
+	void gravity();
+	void moveUp();
 	void die();
 private:
 	void move(glm::vec3 playerPos);
 	glm::vec2 m_texCoord;
 	glm::vec2 m_offset = glm::vec2(0.1f, 0.2f);
 	glm::vec3 m_dir;
+	glm::vec4 m_prevPos;
 	float m_speed = 0.5f;
 	State m_status; 
 	float m_health = 1.0;

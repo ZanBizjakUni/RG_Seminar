@@ -29,4 +29,5 @@ namespace DEngine {
 	extern double endTime;
 	extern double deltaTime;
 	extern float gravity;
+	extern float precision;
 } //namespace
