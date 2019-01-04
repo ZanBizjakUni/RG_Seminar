@@ -10,6 +10,8 @@ It is written in the C++ language with the OpenGL library. For easier to write c
 GLAD (https://github.com/dav1dde/glad-web) for accessing the OpenGL functionalities. 
 Window creation and event listening was handled by the GLFW library ( https://www.glfw.org/ ).
 
+--Most of the readme will be moved over to the Wiki at some point in time--
+
 ------------------------------------------------------------------------------------------------------------------------------
 
 **The engine:**
@@ -54,5 +56,55 @@ images will not be bound since it relies on these two file endings to successful
 The Camera class stores a projection and view matrix for further drawing. Its update method also makes sure that the position
 of the camera is always relevant to its position.
 
--------------------------------------------------------------------------------------------------------------------------------
+Collision manager is a simple method only class, that informs the user whether two objects are colliding. The manager is capable
+of AABB v AABB collision, AABB v Sphere Collision, 2D version of point v AABB and shpere v sphere collision. The AABBs are
+handled and calculated in the Entity (or Player) class. More about the boxes will be written about in the Entity section of the
+DExplorer part.
 
+
+In the future I should add physics to the engine itself. Then Physics handling on multiple Entites will be simpler. As of now, 
+the physics and proper collision setbacks are managed in the Player class ( see DExplorer section ). This limits the physics to
+only the player and if I would want to implement physics and gravity to other mobs, I would have to duplicate code, which is not
+my intention.
+
+------------------------------------------------------------------------------------------------------------------------------
+
+
+**The Game (DExplorer)**
+
+The game is called DExplorer ( short for Dungeon Explorer ) and in the game itself you do just that! The engine project talked
+about above is built into a static c++ library, but the game itself is the executable. The main.cpp file only serves for the 
+initialisation and definition of a MainGame object. After that the MainGame::start() method is called from where the whole game
+begins to build up. 
+
+*MainGame after start() method*
+
+The MainGame object servers as the objects, that links every part of the game together. It contains the Ignition object, InputManager, and every other core component of the Engine.
+  The start method call all other initialising methods responsible for: Shader initialisation, compiling and linking; callback
+function initalisation for key handling; Initalisation of the environment. 
+
+*enviromentInit()*
+
+The typo of this function is pending to be fixed. This method has the important role of setting up the binders and loading in
+the level. Since this game does not contain model loading (and neither does the engine). The vertices, that are stored in the
+binder are set here. This game initialises 4 types of binders. the "square", "skeleton" "cube" and "normalCube" binders. The
+square binder is a square-shaped plane with a radius of 0.5 units. The skeleton binder is a 1:0.5 plane that is used for (you
+guessed it) skeletons of the game. The unique part of this binder are the UV coordinates saved in the binder. the other
+binders have their textures mapped from 0.0, 0.0 to 1.0, 1.0 but in this case it is mapped from 0.0, 0.0 to 0.1, 0.2 . The
+purpose is the animation that the skeletons have in the game.
+  The next important thing that happens in this method is the loading/initalisation of the level. As of now, the capability of
+  choosing between loading from file and loading nothing is not a thing. You have to uncomment a part of the code and comment
+  ther other in order to switch between the two (implementation pending). The game reads a level from a binary file.
+
+*gameLoop()*
+
+The last method to be called from the start() method is the gameLoop. The name is pretty self explanatory. The method
+contains a loop, that repeats itself until the glfwWindowShouldClose() flag of the window pointer is set. The loop contains
+methods to draw and update entites, but the loop acts differently, depending on what state the player is in.
+
+*Player object*
+
+The player object is the object controlled by the user. It's a child class of the Camera class from the engine, since the game
+is played in first-person mode, the attributes of the Camera class are very useful to have in the Player class itself. In the 
+MainGame object and most others, we contain the pointer to the Player class, since we may change it in many places, having only
+a pointer is a very helpful thing.
