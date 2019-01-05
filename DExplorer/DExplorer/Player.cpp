@@ -23,7 +23,7 @@ Player::Player(): Camera(), Physics(m_pos) {
 	m_minAABB = glm::vec4(m_pos.x - 0.1f, m_pos.y - 0.75f, m_pos.z - 0.1f, 1.0f);
 	m_maxAABB = glm::vec4(m_pos.x + 0.1f, m_pos.y + 0.1f, m_pos.z + 0.1f, 1.0f);
 
-	m_state = PState::CREATE;
+	m_state = PState::PLAY;
 }
 
 
