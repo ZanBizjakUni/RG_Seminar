@@ -2,7 +2,7 @@
 
 RG seminar - Presentation and how to use.
 
-This project is a part of a seminar in the computer graphics class in my college (UL FRI).
+This project is a part of a seminar in the computer graphics class at my college (UL FRI).
 
 The project is being made in a group with another student (@ziga-solar) with whom I built together this project.
 
